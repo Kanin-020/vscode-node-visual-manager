@@ -43,16 +43,22 @@ async function getNodeVersionList() {
         let arrayResultante: any[] = [];
 
         lineas.forEach((linea) => {
-            // Eliminar el asterisco y dividir la línea por espacio
-            var partes = linea.replace('* ', '').split(' ');
 
-            // Crear un objeto con las propiedades "version" y "nombre"
-            var objeto = {
+            let partes = linea.replace('* ', '').split(' ');
+
+
+            let tieneDefault = partes.includes('default');
+            let alias = tieneDefault ? partes.slice(1, -1).join(' ') : partes.slice(1).join(' ');
+
+            alias = alias.replace(',', '');
+
+            let objeto = {
                 version: partes[0],
-                alias: partes.slice(1).join(' ') // Unir las partes restantes para el nombre
+                alias: alias,
+                default: tieneDefault
             };
 
-            // Agregar el objeto al array resultante
+
             arrayResultante.push(objeto);
         });
 
@@ -157,7 +163,7 @@ async function getCurrentNodeVersion() {
 
     try {
 
-        const { stdout } = await execAsync('fnm current');
+        const { stdout } = await execAsync('powershell.exe -Command "fnm current"');
 
         return stdout;
 

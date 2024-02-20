@@ -6,11 +6,16 @@ getNodeVersionRemoteList();
 
 const itemList = document.getElementById('item-list');
 
+const searchBar = document.getElementById('search-bar');
+
+var itemListOriginalOrder;
+
 window.addEventListener('message', async (event) => {
 
     const message = event.data;
 
     switch (message.type) {
+
         case 'receive-list':
 
             const versionList = message.data;
@@ -20,6 +25,16 @@ window.addEventListener('message', async (event) => {
                 createNodeItem(item);
 
             });
+
+            getCurrentNodeVersion();
+
+             itemListOriginalOrder = Array.from(itemList.children);
+
+            break;
+
+        case 'receive-current':
+
+            changeCurrentStateFromList(message.data);
 
             break;
 
@@ -39,6 +54,35 @@ window.addEventListener('message', async (event) => {
             break;
     }
 
+
+});
+
+
+searchBar.addEventListener('input', () => {
+
+    if (searchBar.value === '') {
+        itemList.innerHTML = '';
+        itemListOriginalOrder.forEach((originalItem) => {
+            itemList.appendChild(originalItem.cloneNode(true));
+        });
+        return;
+    }
+
+    const children = Array.from(itemList.children);
+
+    const filteredChildren = children.filter((child) => {
+        return child.textContent.toLowerCase().includes(searchBar.value.toLowerCase());
+    });
+
+    filteredChildren.sort((a, b) => {
+        return a.textContent.localeCompare(b.textContent);
+    });
+
+    itemList.innerHTML = '';
+
+    filteredChildren.forEach((child) => {
+        itemList.appendChild(child);
+    });
 
 });
 
@@ -64,6 +108,14 @@ function getNodeVersionRemoteList() {
 
     clientVsCode.postMessage({
         type: 'send-list-remote'
+    });
+
+}
+
+function getCurrentNodeVersion() {
+
+    clientVsCode.postMessage({
+        type: 'send-current'
     });
 
 }
@@ -100,7 +152,9 @@ function createNodeItem(item) {
         const nodeItem = document.createElement('div');
         nodeItem.classList.add('node-item');
 
-        nodeItem.setAttribute('id', item.version);
+        const id = item.version.replace(/\./g, '_');
+
+        nodeItem.setAttribute('id', id);
 
         const nodeItemContent = document.createElement('div');
         nodeItemContent.classList.add('node-item-content');
@@ -108,6 +162,9 @@ function createNodeItem(item) {
         const alias = document.createElement('span');
         alias.classList.add('alias');
         alias.textContent = item.alias;
+
+        const tag = document.createElement('span');
+        tag.classList.add('tag');
 
         const version = document.createElement('span');
         version.classList.add('version');
@@ -120,11 +177,16 @@ function createNodeItem(item) {
         const favoriteIcon = document.createElement('i');
         favoriteOption.classList.add('action');
 
-        if (item.alias.includes('default')) {
+        if (item.default === true) {
             favoriteIcon.classList.add('codicon', 'codicon-heart-filled');
+
+            tag.classList.add('default', 'show');
+            tag.textContent = 'default';
+
         } else {
             favoriteIcon.classList.add('codicon', 'codicon-heart');
         }
+
         favoriteOption.appendChild(favoriteIcon);
 
         const editOption = document.createElement('a');
@@ -139,6 +201,18 @@ function createNodeItem(item) {
         deleteIcon.classList.add('codicon', 'codicon-close');
         deleteOption.appendChild(deleteIcon);
 
+        options.appendChild(favoriteOption);
+        options.appendChild(editOption);
+        options.appendChild(deleteOption);
+
+        nodeItem.appendChild(nodeItemContent);
+        nodeItemContent.appendChild(alias);
+        nodeItemContent.appendChild(tag);
+        nodeItemContent.appendChild(version);
+        nodeItemContent.appendChild(options);
+
+        itemList.appendChild(nodeItem);
+
         favoriteOption.addEventListener('click', () => {
             setDefaultNodeVersion(item.version);
         });
@@ -147,30 +221,49 @@ function createNodeItem(item) {
             uninstallNodeVersion(item.version);
         });
 
-        options.appendChild(favoriteOption);
-        options.appendChild(editOption);
-        options.appendChild(deleteOption);
-
-        nodeItem.appendChild(nodeItemContent);
-        nodeItemContent.appendChild(alias);
-        nodeItemContent.appendChild(version);
-        nodeItemContent.appendChild(options);
-
-        itemList.appendChild(nodeItem);
-
     }
+}
+
+function changeCurrentStateFromList(id) {
+
+    try {
+        const castedId = id.replace(/\./g, '_');
+
+        console.log(castedId);
+
+        const item = itemList.querySelector('#' + castedId);
+
+        const tag = item.querySelector('.tag');
+
+        tag.classList.add('current', 'show');
+
+        tag.textContent = 'current';
+
+    } catch {
+        console.error('Item not defined');
+    }
+
+
 }
 
 function changeDefaultStateFromList(id) {
 
     try {
 
+        const castedId = id.replace(/\./g, '_');
+
+        console.log(castedId);
+
+        const oldItem = itemList.querySelector('.default');
+
+        oldItem.classList.remove('show');
+
         const oldIcon = itemList.querySelector('.codicon-heart-filled');
 
         oldIcon.classList.remove('codicon-heart-filled');
         oldIcon.classList.add('codicon-heart');
 
-        const changedItem = document.getElementById(id);
+        const changedItem = document.getElementById(castedId);
 
         const icon = changedItem.querySelector('.codicon-heart');
 
@@ -188,9 +281,18 @@ function changeDefaultStateFromList(id) {
 
 function deleteItemFromList(id) {
 
-    const deletedItem = document.getElementById(id);
+    try {
 
-    itemList.removeChild(deletedItem);
+        const castedId = id.replace(/\./g, '_');
+
+        const deletedItem = document.getElementById(castedId);
+
+        itemList.removeChild(deletedItem);
+
+    } catch {
+        console.error('Item not defined');
+    }
+
 
 }
 

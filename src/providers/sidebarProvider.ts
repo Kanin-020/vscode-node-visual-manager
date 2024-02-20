@@ -45,6 +45,14 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     break;
 
                 }
+                case "send-current": {
+
+                    const currentNodeVersion = await getCurrent();
+
+                    webviewView.webview.postMessage({ type: 'receive-current', data: currentNodeVersion });
+
+                    break;
+                }
                 case "send-default": {
 
                     const defaultResponse = await setDefault(data.data);
@@ -179,6 +187,14 @@ async function getRemoteList() {
 async function setDefault(version: string) {
 
     const response = await fnm.setDefaultNodeVersion(version);
+
+    return response;
+
+}
+
+async function getCurrent(){
+
+    const response = await fnm.getCurrentNodeVersion();
 
     return response;
 
