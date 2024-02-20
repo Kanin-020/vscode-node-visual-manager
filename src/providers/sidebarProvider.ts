@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 
-import { getNodeVersionList, verifyIsInstalled } from '../model/sidebar';
-
+import fnm from '../model/sidebar';
 import fs from 'fs';
 import { getNonce } from './getNonce';
 
@@ -25,14 +24,50 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
-                case "verifyIsInstalled": {
+                case "send-installed": {
                     isInstalled(data);
                     break;
                 }
-                case "getList": {
-                   const nodeList = await getList(data);
-                    webviewView.webview.postMessage({type: 'getList', data: nodeList});
+                case "send-list": {
+
+                    const nodeList = await getList();
+
+                    webviewView.webview.postMessage({ type: 'receive-list', data: nodeList });
+
                     break;
+                }
+                case "send-list-remote": {
+
+                    const nodeRemoteList = await getRemoteList();
+
+                    webviewView.webview.postMessage({ type: 'receive-list-remote', data: nodeRemoteList });
+
+                    break;
+
+                }
+                case "send-default": {
+
+                    const defaultResponse = await setDefault(data.data);
+
+                    defaultResponse.message = `The node version has been set to ${defaultResponse.id}`;
+
+                    vscode.window.showInformationMessage(defaultResponse.message);
+
+                    webviewView.webview.postMessage({ type: 'receive-default', data: defaultResponse.id });
+
+                    break;
+
+                }
+                case "send-uninstall": {
+
+                    const deleteResponse = await uninstallVersion(data.data);
+
+                    vscode.window.showInformationMessage(deleteResponse.message);
+
+                    webviewView.webview.postMessage({ type: 'receive-uninstall', data: deleteResponse.id });
+
+                    break;
+
                 }
                 case "onInfo": {
                     if (!data.value) {
@@ -52,7 +87,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             }
         });
 
-        webviewView.webview.postMessage('LISTresponde');
     }
 
     public revive(panel: vscode.WebviewView) {
@@ -66,6 +100,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         );
         const styleVSCodeUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this._extensionUri, "src/styles", "vscode.css")
+        );
+        const styleIconsUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this._extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css')
         );
         const styleSidebar = webview.asWebviewUri(
             vscode.Uri.joinPath(this._extensionUri, "src/styles", "sidebar.css")
@@ -90,6 +127,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
                 <link href="${styleSidebar}" rel="stylesheet">
                 <link href="${styleVSCodeUri}" rel="stylesheet">
+                <link href="${styleIconsUri}" rel="stylesheet">
                 <link href="${styleGlobalUri}" rel="stylesheet">
 
                 <script nonce="${nonce}">
@@ -110,7 +148,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
 async function isInstalled(data: any) {
 
-    const response = await verifyIsInstalled();
+    const response = await fnm.verifyIsInstalled();
 
     data.value = response;
 
@@ -123,9 +161,32 @@ async function isInstalled(data: any) {
 
 }
 
-async function getList(data: any) {
+async function getList() {
 
-    const response = await getNodeVersionList();
+    const response = await fnm.getNodeVersionList();
+
+    return response;
+
+}
+
+async function getRemoteList() {
+
+    const response = await fnm.getNodeVersionRemoteList();
+
+    return response;
+}
+
+async function setDefault(version: string) {
+
+    const response = await fnm.setDefaultNodeVersion(version);
+
+    return response;
+
+}
+
+async function uninstallVersion(version: string) {
+
+    const response = await fnm.uninstallNodeVersion(version);
 
     return response;
 

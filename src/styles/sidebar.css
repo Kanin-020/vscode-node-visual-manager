@@ -26,8 +26,11 @@ body {
 .search-container {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 0px 12px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 12px;
+    padding-right: 12px;
+    justify-content: center;
 }
 
 .search-bar {
@@ -38,6 +41,7 @@ body {
     font-size: inherit !important;
     font-family: inherit !important;
     color: inherit !important;
+    padding: 3px 0 3px 6px !important;
 }
 
 .node-item {
@@ -47,11 +51,16 @@ body {
     line-height: 18px;
 }
 
+.node-item:hover {
+    background-color: var(--vscode-list-hoverBackground);
+}
+
 .node-item-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
+    gap: 16px;
 }
 
 .alias {
@@ -69,3 +78,14 @@ body {
     text-align: right;
     white-space: nowrap;
 }
+
+.options {
+    display: flex;
+    gap: 5px;
+}
+
+
+.default {
+    color: var(--vscode-list-highlightForeground);
+}
+
