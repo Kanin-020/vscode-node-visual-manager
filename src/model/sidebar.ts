@@ -1,57 +1,83 @@
-const { exec } = require('child_process');
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
-export function verifyInstalled() {
+const execAsync = promisify(exec);
 
-    let response;
+export async function verifyIsInstalled() {
 
-    exec('fnm --versions', (error: any, stdout: any, stderr: any) => {
-        if (error) {
-            console.error(`Error al ejecutar el comando: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            console.error(`Error en la salida estándar del comando: ${stderr}`);
-            return;
-        }
-        console.log(`Salida del comando:\n${stdout}`);
+    try {
+        const { stdout } = await execAsync('fnm --version');
 
         if (stdout.includes('fnm')) {
-            response = 'Está instalado';
+            return true;
+        } else {
+            return false;
         }
-
-    });
-
-    return response;
+    } catch (error) {
+        console.error(`Error al ejecutar el comando: ${error}`);
+        throw error; // O maneja el error de otra manera según tus necesidades
+    }
 
 }
 
-export function getList(){
+export async function getNodeVersionList() {
 
-    let response;
+    try {
+        const { stdout } = await execAsync('fnm list');
 
-    exec('fnm list', (error: any, stdout: any, stderr: any) => {
-        if (error) {
-            console.error(`Error al ejecutar el comando: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            console.error(`Error en la salida estándar del comando: ${stderr}`);
-            return;
-        }
+        return stdout;
 
-        console.log(`Salida del comando:\n${stdout}`);
+    } catch (error) {
+        console.error(`Error al ejecutar el comando: ${error}`);
+        throw error; // O maneja el error de otra manera según tus necesidades
+    }
 
-        if (stdout.includes('fnm')) {
-            response = 'Está instalado';
-        }
+}
 
-    });
+export async function getNodeRemoteList() {
 
+    try {
+        const { stdout } = await execAsync('fnm list-remote');
+
+        return stdout;
+
+    } catch (error) {
+        console.error(`Error al ejecutar el comando: ${error}`);
+        throw error; // O maneja el error de otra manera según tus necesidades
+    }
+
+}
+
+export async function installNodeVersion(version: string) {
+
+    try {
+        const { stdout } = await execAsync('fnm install ' + version);
+
+        return stdout;
+
+    } catch (error) {
+        console.error(`Error al ejecutar el comando: ${error}`);
+        throw error; // O maneja el error de otra manera según tus necesidades
+    }
+
+}
+
+export async function uninstallNodeVersion(version: string) {
+
+    try {
+
+        const { stdout } = await execAsync('fnm uninstall ' + version);
+
+        return stdout;
+
+    } catch (error) {
+        console.error(`Error al ejecutar el comando: ${error}`);
+        throw error; // O maneja el error de otra manera según tus necesidades
+    }
 
 }
 
 
-getList();
 
 
 

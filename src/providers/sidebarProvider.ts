@@ -1,7 +1,9 @@
 import * as vscode from 'vscode';
 
+import { getNodeVersionList, verifyIsInstalled } from '../model/sidebar';
+
 import fs from 'fs';
-import { verifyInstalled } from '../model/sidebar';
+import { getNonce } from './getNonce';
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
@@ -23,8 +25,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
-                case "fnmList": {
-                   const response = verifyInstalled();
+                case "verifyIsInstalled": {
+                    isInstalled(data);
+                    break;
+                }
+                case "getList": {
+                   const nodeList = await getList(data);
+                    webviewView.webview.postMessage({type: 'getList', data: nodeList});
                     break;
                 }
                 case "onInfo": {
@@ -32,6 +39,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                         return;
                     }
                     vscode.window.showInformationMessage(data.value);
+
                     break;
                 }
                 case "onError": {
@@ -43,6 +51,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 }
             }
         });
+
+        webviewView.webview.postMessage('LISTresponde');
     }
 
     public revive(panel: vscode.WebviewView) {
@@ -57,14 +67,17 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         const styleVSCodeUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this._extensionUri, "src/styles", "vscode.css")
         );
-
+        const styleSidebar = webview.asWebviewUri(
+            vscode.Uri.joinPath(this._extensionUri, "src/styles", "sidebar.css")
+        );
         const scriptUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this._extensionUri, "src/controllers", "sidebar.js")
         );
 
-
         const htmlFilePath = vscode.Uri.joinPath(this._extensionUri, "src/pages", "sidebar.html").fsPath;
         const htmlString = fs.readFileSync(htmlFilePath, 'utf-8');
+
+        const nonce = getNonce();
 
         return `<!DOCTYPE html>
             <html lang="en"
@@ -73,18 +86,20 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Cat Coding</title>
 
+                <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
 
-                <meta
-          http-equiv="Content-Security-Policy"
-          content="default-src 'none'; img-src ${webview.cspSource} https:; script-src ${webview.cspSource}; style-src ${webview.cspSource};"
-        />
-
+                <link href="${styleSidebar}" rel="stylesheet">
                 <link href="${styleVSCodeUri}" rel="stylesheet">
                 <link href="${styleGlobalUri}" rel="stylesheet">
+
+                <script nonce="${nonce}">
+                    const clientVsCode = acquireVsCodeApi();
+                </script>
+
             </head>
             <body>
                 ${htmlString}
-                <script src="${scriptUri}"></script>
+                <script nonce="${nonce}" src="${scriptUri}" ></script>
             </body>
             </html>`;
 
@@ -93,3 +108,25 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
 }
 
+async function isInstalled(data: any) {
+
+    const response = await verifyIsInstalled();
+
+    data.value = response;
+
+    if (response === true) {
+        console.log('FNM is installed');
+    }
+    else {
+        vscode.window.showErrorMessage('FNM is not installed');
+    }
+
+}
+
+async function getList(data: any) {
+
+    const response = await getNodeVersionList();
+
+    return response;
+
+}

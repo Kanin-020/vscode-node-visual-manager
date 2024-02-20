@@ -105,3 +105,8 @@ input::placeholder,
 textarea::placeholder {
     color: var(--vscode-input-placeholderForeground);
 }
+
+::selection{
+    background: var(--vscode-selection-background);
+    color: var(--vscode-input-foreground);
+}
