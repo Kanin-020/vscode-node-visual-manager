@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
-import fnm from '../model/sidebar';
 import fs from 'fs';
 import { getNonce } from './getNonce';
+import nvm from '../model/sidebar';
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
@@ -24,8 +24,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
-                case "send-installed": {
+                case "send-nvm": {
+
                     isInstalled(data);
+
                     break;
                 }
                 case "send-list": {
@@ -53,18 +55,19 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
                     break;
                 }
-                case "send-default": {
+                case "send-use": {
 
-                    const defaultResponse = await setDefault(data.data);
+                    const useResponse = await useVersion(data.data);
 
-                    defaultResponse.message = `The node version has been set to ${defaultResponse.id}`;
+                    if (useResponse) {
 
-                    vscode.window.showInformationMessage(defaultResponse.message);
+                        vscode.window.showInformationMessage(useResponse.message);
 
-                    webviewView.webview.postMessage({ type: 'receive-default', data: defaultResponse.id });
+                        webviewView.webview.postMessage({ type: 'receive-use', data: useResponse.id });
+
+                    }
 
                     break;
-
                 }
                 case "send-uninstall": {
 
@@ -156,22 +159,19 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
 async function isInstalled(data: any) {
 
-    const response = await fnm.verifyIsInstalled();
+    const response = await nvm.verifyNvmIsInstalled();
 
     data.value = response;
 
-    if (response === true) {
-        console.log('FNM is installed');
-    }
-    else {
-        vscode.window.showErrorMessage('FNM is not installed');
+    if (response === false) {
+        vscode.window.showErrorMessage('nvm is not installed');
     }
 
 }
 
 async function getList() {
 
-    const response = await fnm.getNodeVersionList();
+    const response = await nvm.getNodeVersionList();
 
     return response;
 
@@ -179,22 +179,30 @@ async function getList() {
 
 async function getRemoteList() {
 
-    const response = await fnm.getNodeVersionRemoteList();
+    const response = await nvm.getNodeVersionRemoteList();
 
     return response;
 }
 
-async function setDefault(version: string) {
+async function getCurrent() {
 
-    const response = await fnm.setDefaultNodeVersion(version);
+    const response = await nvm.getCurrentNodeVersion();
 
     return response;
 
 }
 
-async function getCurrent(){
+async function useVersion(version: string) {
 
-    const response = await fnm.getCurrentNodeVersion();
+    const response = await nvm.useNodeVersion(version);
+
+    return response;
+
+}
+
+async function installVersion(version: string) {
+
+    const response = await nvm.installNodeVersion(version);
 
     return response;
 
@@ -202,7 +210,7 @@ async function getCurrent(){
 
 async function uninstallVersion(version: string) {
 
-    const response = await fnm.uninstallNodeVersion(version);
+    const response = await nvm.uninstallNodeVersion(version);
 
     return response;
 

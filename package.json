@@ -1,6 +1,6 @@
 {
-  "name": "fun-node-manager",
-  "displayName": "Fun Node Manager",
+  "name": "node-visual-manager",
+  "displayName": "Node Visual Manager",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -14,29 +14,29 @@
   "contributes": {
     "commands": [
       {
-        "command": "fun-node-manager.helloWorld",
+        "command": "node-visual-manager.helloWorld",
         "title": "Hello World"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "fun-node-manager-sidebar-view",
-          "title": "Fun Node Manager",
+          "id": "node-visual-manager-sidebar-view",
+          "title": "Node Visual Manager",
           "icon": "/src/assets/fnm.svg"
         }
       ]
     },
     "views": {
-      "fun-node-manager-sidebar-view": [
+      "node-visual-manager-sidebar-view": [
         {
           "type": "webview",
-          "id": "fun-node-manager-sidebar",
-          "name": "Fun Node Manager"
+          "id": "node-visual-manager-sidebar",
+          "name": "Node Visual Manager"
         },
         {
           "type": "webview",
-          "id": "fun-node-manager-sidebar-remotes",
+          "id": "node-visual-manager-sidebar-remotes",
           "name": "Remote Node Versions"
         }
       ]

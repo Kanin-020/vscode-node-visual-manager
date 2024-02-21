@@ -1,6 +1,6 @@
-# fun-node-manager README
+# node-visual-manager README
 
-This is the README for your extension "fun-node-manager". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "node-visual-manager". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 

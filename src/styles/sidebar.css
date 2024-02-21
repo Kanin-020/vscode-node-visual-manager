@@ -44,6 +44,13 @@ body {
     padding: 3px 0 3px 6px !important;
 }
 
+.options {
+    display: none;
+    gap: 5px;
+    position: absolute;
+    right: 0;
+}
+
 .node-item {
     position: relative;
     margin: 1px;
@@ -51,19 +58,16 @@ body {
     line-height: 18px;
 }
 
-.node-item:hover {
-    background-color: var(--vscode-list-hoverBackground);
-}
-
 .node-item-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     position: relative;
     gap: 16px;
+    padding: 0px 10px;
 }
 
-.alias {
+.version {
     display: block;
     flex-grow: 1;
     overflow: hidden;
@@ -72,28 +76,27 @@ body {
     white-space: nowrap;
 }
 
-.version {
-    min-width: 30px;
-    color: var(--vscode-descriptionForeground);
-    text-align: right;
-    white-space: nowrap;
-}
-
-.options {
-    display: flex;
-    gap: 5px;
-}
-
-.show{
+.show {
     display: flex !important;
 }
 
-.default {
-    display: none;
-    color: var(--vscode-list-highlightForeground);
-}
-
-.current{
+.current {
     display: none;
     color: var(--vscode-gitDecoration-untrackedResourceForeground);
+}
+
+.node-item:hover {
+    background-color: var(--vscode-list-hoverBackground);
+
+    .options {
+        display: flex;
+    }
+
+    .tag {
+        display: none;
+    }
+
+    .show {
+        display: none !important;
+    }
 }

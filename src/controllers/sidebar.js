@@ -1,14 +1,15 @@
-verifyIsInstalled();
+var itemListOriginalOrder;
+
+verifyNvmIsInstalled();
+
+getCurrentNodeVersion();
 
 getNodeVersionList();
-
-getNodeVersionRemoteList();
 
 const itemList = document.getElementById('item-list');
 
 const searchBar = document.getElementById('search-bar');
 
-var itemListOriginalOrder;
 
 window.addEventListener('message', async (event) => {
 
@@ -20,15 +21,16 @@ window.addEventListener('message', async (event) => {
 
             const versionList = message.data;
 
+            getCurrentNodeVersion();
+
             versionList.forEach(item => {
 
                 createNodeItem(item);
 
             });
 
-            getCurrentNodeVersion();
 
-             itemListOriginalOrder = Array.from(itemList.children);
+            itemListOriginalOrder = Array.from(itemList.children);
 
             break;
 
@@ -38,9 +40,9 @@ window.addEventListener('message', async (event) => {
 
             break;
 
-        case 'receive-default':
+        case 'receive-use':
 
-            changeDefaultStateFromList(message.data);
+            getCurrentNodeVersion();
 
             break;
 
@@ -86,17 +88,17 @@ searchBar.addEventListener('input', () => {
 
 });
 
-//FNM Functions
+//FNM Message sending
 
-function verifyIsInstalled() {
+async function verifyNvmIsInstalled() {
 
     clientVsCode.postMessage({
-        type: 'send-installed'
+        type: 'send-nvm'
     });
 
 }
 
-function getNodeVersionList() {
+async function getNodeVersionList() {
 
     clientVsCode.postMessage({
         type: 'send-list'
@@ -104,15 +106,7 @@ function getNodeVersionList() {
 
 }
 
-function getNodeVersionRemoteList() {
-
-    clientVsCode.postMessage({
-        type: 'send-list-remote'
-    });
-
-}
-
-function getCurrentNodeVersion() {
+async function getCurrentNodeVersion() {
 
     clientVsCode.postMessage({
         type: 'send-current'
@@ -120,21 +114,22 @@ function getCurrentNodeVersion() {
 
 }
 
-function setDefaultNodeVersion(id) {
+async function useNodeVersion(id) {
 
     clientVsCode.postMessage({
-        type: 'send-default',
+        type: 'send-use',
         data: id
     });
 
 }
 
-function uninstallNodeVersion(id) {
+async function uninstallNodeVersion(id) {
 
     clientVsCode.postMessage({
         type: 'send-uninstall',
         data: id
     });
+
 }
 
 
@@ -143,138 +138,104 @@ function uninstallNodeVersion(id) {
 
 function createNodeItem(item) {
 
-    if (item.alias === '') {
-        item.alias = item.version;
-    }
+    const nodeItem = document.createElement('div');
+    nodeItem.classList.add('node-item');
 
-    if (item.alias !== '' && item.version !== '') {
+    let id = item.replace(/\./g, '_');
 
-        const nodeItem = document.createElement('div');
-        nodeItem.classList.add('node-item');
+    id = 'v' + id;
 
-        const id = item.version.replace(/\./g, '_');
 
-        nodeItem.setAttribute('id', id);
+    nodeItem.setAttribute('id', id);
 
-        const nodeItemContent = document.createElement('div');
-        nodeItemContent.classList.add('node-item-content');
+    const nodeItemContent = document.createElement('div');
+    nodeItemContent.classList.add('node-item-content');
 
-        const alias = document.createElement('span');
-        alias.classList.add('alias');
-        alias.textContent = item.alias;
+    const version = document.createElement('span');
+    version.classList.add('version');
+    version.textContent = item;
 
-        const tag = document.createElement('span');
-        tag.classList.add('tag');
+    const tag = document.createElement('span');
+    tag.classList.add('tag', 'current');
+    tag.textContent = 'current';
 
-        const version = document.createElement('span');
-        version.classList.add('version');
-        version.textContent = item.version;
+    const options = document.createElement('div');
+    options.classList.add('options');
 
-        const options = document.createElement('div');
-        options.classList.add('options');
+    const setOption = document.createElement('a');
+    const setIcon = document.createElement('i');
+    setOption.classList.add('action');
+    setIcon.classList.add('codicon', 'codicon-run');
+    setOption.appendChild(setIcon);
 
-        const favoriteOption = document.createElement('a');
-        const favoriteIcon = document.createElement('i');
-        favoriteOption.classList.add('action');
+    const deleteOption = document.createElement('a');
+    const deleteIcon = document.createElement('i');
+    deleteOption.classList.add('action');
+    deleteIcon.classList.add('codicon', 'codicon-close');
+    deleteOption.appendChild(deleteIcon);
 
-        if (item.default === true) {
-            favoriteIcon.classList.add('codicon', 'codicon-heart-filled');
+    options.appendChild(setOption);
+    options.appendChild(deleteOption);
 
-            tag.classList.add('default', 'show');
-            tag.textContent = 'default';
+    nodeItem.appendChild(nodeItemContent);
+    nodeItemContent.appendChild(version);
+    nodeItemContent.appendChild(tag);
+    nodeItemContent.appendChild(options);
 
-        } else {
-            favoriteIcon.classList.add('codicon', 'codicon-heart');
-        }
+    itemList.appendChild(nodeItem);
 
-        favoriteOption.appendChild(favoriteIcon);
+    setOption.addEventListener('click', () => {
+        useNodeVersion(item);
+    });
 
-        const editOption = document.createElement('a');
-        const editIcon = document.createElement('i');
-        editOption.classList.add('action');
-        editIcon.classList.add('codicon', 'codicon-edit');
-        editOption.appendChild(editIcon);
+    deleteOption.addEventListener('click', () => {
+        uninstallNodeVersion(item);
+    });
 
-        const deleteOption = document.createElement('a');
-        const deleteIcon = document.createElement('i');
-        deleteOption.classList.add('action');
-        deleteIcon.classList.add('codicon', 'codicon-close');
-        deleteOption.appendChild(deleteIcon);
 
-        options.appendChild(favoriteOption);
-        options.appendChild(editOption);
-        options.appendChild(deleteOption);
-
-        nodeItem.appendChild(nodeItemContent);
-        nodeItemContent.appendChild(alias);
-        nodeItemContent.appendChild(tag);
-        nodeItemContent.appendChild(version);
-        nodeItemContent.appendChild(options);
-
-        itemList.appendChild(nodeItem);
-
-        favoriteOption.addEventListener('click', () => {
-            setDefaultNodeVersion(item.version);
-        });
-
-        deleteOption.addEventListener('click', () => {
-            uninstallNodeVersion(item.version);
-        });
-
-    }
 }
 
 function changeCurrentStateFromList(id) {
 
     try {
-        const castedId = id.replace(/\./g, '_');
 
-        console.log(castedId);
+        let castedId = id.replace(/\./g, '_');
 
         const item = itemList.querySelector('#' + castedId);
 
         const tag = item.querySelector('.tag');
 
-        tag.classList.add('current', 'show');
+        tag.classList.add('show');
 
-        tag.textContent = 'current';
+        const idList = [];
 
-    } catch {
-        console.error('Item not defined');
-    }
+        const itemChildrenList = itemList.children;
 
+        for (let i = 0; i < itemChildrenList.length; i++) {
 
-}
+            if(itemChildrenList[i].id.includes('v')){
+                idList.push(itemChildrenList[i].id);
+            }
 
-function changeDefaultStateFromList(id) {
+        }
 
-    try {
+        for (let i = 0; i < idList.length; i++) {
 
-        const castedId = id.replace(/\./g, '_');
+            castedId = castedId.trim();
 
-        console.log(castedId);
+            idList[i] = idList[i].trim();
 
-        const oldItem = itemList.querySelector('.default');
+            if (castedId !== idList[i]) {
 
-        oldItem.classList.remove('show');
+                const element = itemList.querySelector('#' + idList[i]);
+                const tag = element.querySelector('.tag');
+                tag.classList.remove('show');
 
-        const oldIcon = itemList.querySelector('.codicon-heart-filled');
+            }
+        }
 
-        oldIcon.classList.remove('codicon-heart-filled');
-        oldIcon.classList.add('codicon-heart');
-
-        const changedItem = document.getElementById(castedId);
-
-        const icon = changedItem.querySelector('.codicon-heart');
-
-        icon.classList.remove('codicon-heart');
-        icon.classList.add('codicon-heart-filled');
-
-
-    } catch {
-
-        console.error('Item not defined');
-
+    } catch (error) {
+        console.error('Item not defined: ' + error);
     }
 
 }
