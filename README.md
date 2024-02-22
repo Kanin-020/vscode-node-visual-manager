@@ -6,7 +6,7 @@ Node Visual Manager is a VSCode extension that shows the NVM functionalities dir
 
 NVM has the following functionalities.
 
-![Preview](https://raw.githubusercontent.com/Kanin-020/Node-Visual-Manager/main/resources/preview.gif?token=GHSAT0AAAAAACM6APEBQQ3ZMUUN2THD75RMZOXNBPQ)
+![Preview](https://raw.githubusercontent.com/Kanin-020/Node-Visual-Manager/main/resources/preview.gif?token=GHSAT0AAAAAACM6APEA3RYYJG6UIGFNHYXUZOXPVCQ)
 
 - #### Install versions (Current, LTS, Old versions)
 
