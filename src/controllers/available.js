@@ -9,65 +9,69 @@ const searchBar = document.getElementById('search-bar');
 
 window.addEventListener('message', async (event) => {
 
-    const message = event.data;
+    try {
 
-    switch (message.type) {
+        const message = event.data;
 
-        case 'receive-list-available':
+        switch (message.type) {
 
-            const versionList = message.data;
+            case 'receive-list-available':
 
-            versionList.forEach(item => {
+                const versionList = message.data;
 
-                createNodeItem(item);
+                versionList.forEach(item => {
 
-            });
+                    createNodeItem(item);
 
-            itemListOriginalOrder = Array.from(itemList.children);
+                });
 
-            break;
+                itemListOriginalOrder = Array.from(itemList.children);
 
+                break;
 
-        case 'receive-install':
+            default:
+                break;
+        }
 
-            //Delete element from remote list;
-
-            break;
-
-
-        default:
-            break;
+    } catch (error) {
+        console.error(error);
     }
-
 
 });
 
 
 searchBar.addEventListener('input', () => {
 
-    if (searchBar.value === '') {
-        itemList.innerHTML = '';
-        itemListOriginalOrder.forEach((originalItem) => {
-            itemList.appendChild(originalItem.cloneNode(true));
+    try {
+
+        if (searchBar.value === '') {
+            itemList.innerHTML = '';
+            itemListOriginalOrder.forEach((originalItem) => {
+                itemList.appendChild(originalItem.cloneNode(true));
+            });
+            return;
+        }
+
+        const children = Array.from(itemList.children);
+
+        const filteredChildren = children.filter((child) => {
+            return child.textContent.toLowerCase().includes(searchBar.value.toLowerCase());
         });
-        return;
+
+        filteredChildren.sort((a, b) => {
+            return a.textContent.localeCompare(b.textContent);
+        });
+
+        itemList.innerHTML = '';
+
+        filteredChildren.forEach((child) => {
+            itemList.appendChild(child);
+        });
+
+
+    } catch (error) {
+        console.error(error);
     }
-
-    const children = Array.from(itemList.children);
-
-    const filteredChildren = children.filter((child) => {
-        return child.textContent.toLowerCase().includes(searchBar.value.toLowerCase());
-    });
-
-    filteredChildren.sort((a, b) => {
-        return a.textContent.localeCompare(b.textContent);
-    });
-
-    itemList.innerHTML = '';
-
-    filteredChildren.forEach((child) => {
-        itemList.appendChild(child);
-    });
 
 });
 
@@ -94,66 +98,73 @@ async function installNodeVersion(id) {
 
 function createNodeItem(item) {
 
-    const nodeItem = document.createElement('div');
-    nodeItem.classList.add('node-item');
+    try {
 
-    let id = item.version.replace(/\./g, '_');
+        const nodeItem = document.createElement('div');
+        nodeItem.classList.add('node-item');
 
-    id = 'v' + id;
+        let id = item.version.replace(/\./g, '_');
 
-    nodeItem.setAttribute('id', id);
+        id = 'v' + id;
 
-    const nodeItemContent = document.createElement('div');
-    nodeItemContent.classList.add('node-item-content');
+        nodeItem.setAttribute('id', id);
 
-    const version = document.createElement('span');
-    version.classList.add('version');
-    version.textContent = item.version;
+        const nodeItemContent = document.createElement('div');
+        nodeItemContent.classList.add('node-item-content');
 
-    const tag = document.createElement('span');
-    tag.classList.add('tag');
+        const version = document.createElement('span');
+        version.classList.add('version');
+        version.textContent = item.version;
 
-    switch (item.type) {
-        case 'Current':
-            tag.classList.add('remote');
-            break;
-        case 'LTS':
-            tag.classList.add('lts');
-            break;
-        case 'Old Stable':
-            tag.classList.add('old-stable');
-            break;
-        case 'Old Unstable':
-            tag.classList.add('old-unstable');
-            break;
+        const tag = document.createElement('span');
+        tag.classList.add('tag');
 
-        default:
-            break;
+        switch (item.type) {
+            case 'Current':
+                tag.classList.add('remote');
+                break;
+            case 'LTS':
+                tag.classList.add('lts');
+                break;
+            case 'Old Stable':
+                tag.classList.add('old-stable');
+                break;
+            case 'Old Unstable':
+                tag.classList.add('old-unstable');
+                break;
+
+            default:
+                break;
+        }
+
+        tag.textContent = item.type;
+
+        const options = document.createElement('div');
+        options.classList.add('options');
+
+        const installOption = document.createElement('a');
+        const setIcon = document.createElement('i');
+        installOption.classList.add('action');
+        setIcon.classList.add('codicon', 'codicon-cloud-download');
+        installOption.appendChild(setIcon);
+
+        options.appendChild(installOption);
+
+        nodeItem.appendChild(nodeItemContent);
+        nodeItemContent.appendChild(version);
+        nodeItemContent.appendChild(tag);
+        nodeItemContent.appendChild(options);
+
+        itemList.appendChild(nodeItem);
+
+        installOption.addEventListener('click', () => {
+            installNodeVersion(item.version);
+        });
+
+
+    } catch (error) {
+        console.error(error);
     }
-
-    tag.textContent = item.type;
-
-    const options = document.createElement('div');
-    options.classList.add('options');
-
-    const installOption = document.createElement('a');
-    const setIcon = document.createElement('i');
-    installOption.classList.add('action');
-    setIcon.classList.add('codicon', 'codicon-cloud-download');
-    installOption.appendChild(setIcon);
-
-    options.appendChild(installOption);
-
-    nodeItem.appendChild(nodeItemContent);
-    nodeItemContent.appendChild(version);
-    nodeItemContent.appendChild(tag);
-    nodeItemContent.appendChild(options);
-
-    itemList.appendChild(nodeItem);
-
-    installOption.addEventListener('click', () => {
-        installNodeVersion(item.version);
-    });
 
 }
 

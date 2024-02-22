@@ -49,10 +49,11 @@ async function getNodeVersionList() {
 
         const versionList = stdout.match(versionRegex);
 
-        return versionList;
+        return { nodeList: versionList };
 
     } catch (error) {
         console.error(error);
+        return { error };
     }
 
 }
@@ -60,8 +61,6 @@ async function getNodeVersionList() {
 async function getNodeVersionAvailableList() {
 
     try {
-
-
 
         const { stdout, stderr } = await execAsync('nvm list available');
 
@@ -134,15 +133,33 @@ async function getNodeVersionAvailableList() {
 
         const sortedVersionList = [...currentVersions, ...ltsVersions, ...oldStableVersions, ...oldUnstableVersions];
 
-        return sortedVersionList;
+        return { nodeRemoteList: sortedVersionList };
 
     } catch (error) {
         console.error(error);
+        return { error };
     }
 
 }
 
-getNodeVersionAvailableList();
+async function getCurrentNodeVersion() {
+
+    try {
+
+        const { stdout, stderr } = await execAsync('nvm current');
+
+        if (stderr) {
+            throw new Error(stderr);
+        }
+
+        return { currentNodeVersion: stdout };
+
+    } catch (error) {
+        console.error(error);
+        return { error };
+    }
+
+}
 
 async function installNodeVersion(version: string) {
 
@@ -158,6 +175,7 @@ async function installNodeVersion(version: string) {
 
     } catch (error) {
         console.error(error);
+        return { error };
     }
 
 }
@@ -176,6 +194,7 @@ async function uninstallNodeVersion(version: string) {
 
     } catch (error) {
         console.error(error);
+        return { error };
     }
 
 }
@@ -194,27 +213,11 @@ async function useNodeVersion(version: string) {
 
     } catch (error) {
         console.error(error);
+        return { error };
     }
 
 }
 
-async function getCurrentNodeVersion() {
-
-    try {
-
-        const { stdout, stderr } = await execAsync('nvm current');
-
-        if (stderr) {
-            throw new Error(stderr);
-        }
-
-        return stdout;
-
-    } catch (error) {
-        console.error(error);
-    }
-
-}
 
 async function enableNVM() {
 
@@ -226,10 +229,11 @@ async function enableNVM() {
             throw new Error(stderr);
         }
 
-        return stdout;
+        return { message: stdout };
 
     } catch (error) {
         console.error(error);
+        return { error };
     }
 
 }
@@ -244,10 +248,11 @@ async function disableNVM() {
             throw new Error(stderr);
         }
 
-        return stdout;
+        return { message: stdout };
 
     } catch (error) {
         console.error(error);
+        return { error };
     }
 
 }

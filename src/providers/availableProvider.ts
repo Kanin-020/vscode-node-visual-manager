@@ -26,41 +26,16 @@ export class AvailableProvider implements vscode.WebviewViewProvider {
             switch (data.type) {
                 case "send-list-available": {
 
-                    const nodeList = await getRemoteList();
-
-                    webviewView.webview.postMessage({ type: 'receive-list-available', data: nodeList });
+                    getRemoteList(webviewView);
 
                     break;
                 }
                 case "send-install": {
 
-                    const installResponse = await installVersion(data.data);
-
-                    if (installResponse) {
-
-                        vscode.window.showInformationMessage(installResponse.message);
-
-                        webviewView.webview.postMessage({ type: 'receive-install', data: installResponse.id });
-
-                    }
+                    installVersion(data.data, webviewView);
 
                     break;
 
-                }
-                case "onInfo": {
-                    if (!data.value) {
-                        return;
-                    }
-                    vscode.window.showInformationMessage(data.value);
-
-                    break;
-                }
-                case "onError": {
-                    if (!data.value) {
-                        return;
-                    }
-                    vscode.window.showErrorMessage(data.value);
-                    break;
                 }
             }
         });
@@ -124,17 +99,50 @@ export class AvailableProvider implements vscode.WebviewViewProvider {
 
 }
 
-async function getRemoteList() {
+async function getRemoteList(webviewView: vscode.WebviewView) {
 
-    const response = await nvm.getNodeVersionAvailableList();
+    try {
 
-    return response;
+        const response = await nvm.getNodeVersionAvailableList();
+
+        if (response.error) {
+            vscode.window.showErrorMessage('Could not get available node version list. Verify your internet connection.');
+        }
+
+        if (response.nodeRemoteList) {
+            webviewView.webview.postMessage({ type: 'receive-list-available', data: response.nodeRemoteList });
+        }
+
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
 }
 
-async function installVersion(version: string) {
+async function installVersion(version: string, webviewView: vscode.WebviewView) {
 
-    const response = await nvm.installNodeVersion(version);
+    try {
 
-    return response;
+        const response = await nvm.installNodeVersion(version);
 
+        if (response.error) {
+            vscode.window.showErrorMessage('Could not install the requested version.');
+        }
+
+        if (response.message) {
+            vscode.window.showInformationMessage(response.message);
+            webviewView.webview.postMessage({ type: 'receive-install', data: response.id });
+        }
+
+
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
 }
+

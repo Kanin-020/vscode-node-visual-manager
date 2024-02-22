@@ -32,97 +32,42 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 }
                 case "send-list": {
 
-                    const nodeList = await getList();
-
-                    webviewView.webview.postMessage({ type: 'receive-list', data: nodeList });
+                    getList(webviewView);
 
                     break;
                 }
                 case "send-current": {
 
-                    const currentNodeVersion = await getCurrent();
-
-                    webviewView.webview.postMessage({ type: 'receive-current', data: currentNodeVersion });
+                    getCurrent(webviewView);
 
                     break;
                 }
                 case "send-use": {
 
-                    const useResponse = await useVersion(data.data);
-
-                    if (useResponse) {
-
-                        vscode.window.showInformationMessage(useResponse.message);
-
-                        webviewView.webview.postMessage({ type: 'receive-use', data: useResponse.id });
-
-                    }
+                    useVersion(data.data, webviewView);
 
                     break;
                 }
                 case "send-uninstall": {
 
-                    const deleteResponse = await uninstallVersion(data.data);
-
-                    if (deleteResponse) {
-
-                        vscode.window.showInformationMessage(deleteResponse.message);
-
-                        webviewView.webview.postMessage({ type: 'receive-uninstall', data: deleteResponse.id });
-
-                    }
+                    uninstallVersion(data.data, webviewView);
 
                     break;
 
                 }
                 case "send-on": {
 
-                    const enableResponse = await enable();
-
-                    const currentResponse = await getCurrent();
-
-                    if (enableResponse) {
-
-                        vscode.window.showInformationMessage(enableResponse);
-
-                        webviewView.webview.postMessage({ type: 'receive-on', data: currentResponse });
-
-                    }
+                    enable(webviewView);
 
                     break;
 
                 }
                 case "send-off": {
 
-                    const disableResponse = await disable();
-
-                    const currentResponse = await getCurrent();
-
-                    if (disableResponse) {
-
-                        vscode.window.showInformationMessage(disableResponse);
-
-                        webviewView.webview.postMessage({ type: 'receive-off', data: currentResponse });
-
-                    }
+                    disable(webviewView);
 
                     break;
 
-                }
-                case "onInfo": {
-                    if (!data.value) {
-                        return;
-                    }
-                    vscode.window.showInformationMessage(data.value);
-
-                    break;
-                }
-                case "onError": {
-                    if (!data.value) {
-                        return;
-                    }
-                    vscode.window.showErrorMessage(data.value);
-                    break;
                 }
             }
         });
@@ -188,60 +133,137 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
 async function isInstalled(data: any) {
 
-    const response = await nvm.verifyNvmIsInstalled();
+    try {
 
-    data.value = response;
+        const response = await nvm.verifyNvmIsInstalled();
 
-    if (response === false) {
-        vscode.window.showErrorMessage('NVM is not installed');
+        data.value = response;
+
+        if (response === false) {
+            vscode.window.showErrorMessage('NVM is not installed');
+        }
+
+    } catch (error) {
+        console.error(error);
     }
 
 }
 
-async function getList() {
+async function getList(webviewView: vscode.WebviewView) {
 
-    const response = await nvm.getNodeVersionList();
+    try {
 
-    return response;
+        const response = await nvm.getNodeVersionList();
+
+        if (response.error) {
+            vscode.window.showErrorMessage('Could not get node version list.');
+        }
+
+        if (response.nodeList) {
+            webviewView.webview.postMessage({ type: 'receive-list', data: response.nodeList });
+        }
+
+
+    } catch (error) {
+        console.error(error);
+    }
 
 }
 
-async function getCurrent() {
+async function getCurrent(webviewView: vscode.WebviewView) {
 
-    const response = await nvm.getCurrentNodeVersion();
+    try {
 
-    return response;
+        const response = await nvm.getCurrentNodeVersion();
+
+        if (response.error) {
+            return;
+        }
+
+        if (response.currentNodeVersion) {
+
+            webviewView.webview.postMessage({ type: 'receive-current', data: response.currentNodeVersion });
+
+            return response.currentNodeVersion;
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
 
 }
 
-async function useVersion(version: string) {
+async function useVersion(version: string, webviewView: vscode.WebviewView) {
 
     const response = await nvm.useNodeVersion(version);
 
-    return response;
+    if (response.error) {
+        vscode.window.showErrorMessage('Could not set version to: ' + version);
+    }
+
+    if (response.message && response.id) {
+
+        vscode.window.showInformationMessage(response.message);
+
+        webviewView.webview.postMessage({ type: 'receive-use', data: response.id });
+    }
 
 }
 
-async function uninstallVersion(version: string) {
+async function uninstallVersion(version: string, webviewView: vscode.WebviewView) {
 
     const response = await nvm.uninstallNodeVersion(version);
 
-    return response;
+    if (response.error) {
+        vscode.window.showErrorMessage('Could not uninstall the selected version.');
+    }
+
+    if (response.message && response.id) {
+
+        vscode.window.showInformationMessage(response.message);
+
+        webviewView.webview.postMessage({ type: 'receive-uninstall', data: response.id });
+
+    }
 
 }
 
-async function enable() {
+async function enable(webviewView: vscode.WebviewView) {
 
     const response = await nvm.enableNVM();
 
-    return response;
+    const currentResponse = await nvm.getCurrentNodeVersion();
+
+    if (response.error) {
+        vscode.window.showInformationMessage('NVM could not be enabled.');
+    }
+
+    if (response.message && currentResponse.currentNodeVersion) {
+
+        vscode.window.showInformationMessage(response.message);
+
+        webviewView.webview.postMessage({ type: 'receive-on', data: currentResponse.currentNodeVersion });
+
+    }
 
 }
 
-async function disable() {
+async function disable(webviewView: vscode.WebviewView) {
 
     const response = await nvm.disableNVM();
 
-    return response;
+    const currentResponse = await nvm.getCurrentNodeVersion();
+
+    if (response.error) {
+        vscode.window.showInformationMessage('NVM could not be disabled.');
+    }
+
+    if (response.message && currentResponse.currentNodeVersion) {
+
+        vscode.window.showInformationMessage(response.message);
+
+        webviewView.webview.postMessage({ type: 'receive-off', data: currentResponse.currentNodeVersion });
+
+    }
 
 }

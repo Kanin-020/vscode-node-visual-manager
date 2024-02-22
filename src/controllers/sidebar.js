@@ -19,111 +19,133 @@ const enableButton = document.getElementById('enable-button');
 
 window.addEventListener('message', async (event) => {
 
-    const message = event.data;
+    try {
 
-    switch (message.type) {
+        const message = event.data;
 
-        case 'receive-list':
+        switch (message.type) {
 
-            const versionList = message.data;
+            case 'receive-list':
 
-            getCurrentNodeVersion();
+                const versionList = message.data;
 
-            versionList.forEach(item => {
+                getCurrentNodeVersion();
 
-                createNodeItem(item);
+                versionList.forEach(item => {
 
-            });
+                    createNodeItem(item);
 
+                });
 
-            itemListOriginalOrder = Array.from(itemList.children);
+                getCurrentNodeVersion();
 
-            break;
+                itemListOriginalOrder = Array.from(itemList.children);
 
-        case 'receive-current':
+                break;
 
-            changeCurrentStateFromList(message.data);
+            case 'receive-current':
 
-            enableState = message.data;
+                changeCurrentStateFromList(message.data);
 
-            setNvmState(message.data);
+                enableState = message.data;
 
-            break;
+                setNvmState(message.data);
 
-        case 'receive-use':
+                break;
 
-            getCurrentNodeVersion();
+            case 'receive-use':
 
-            break;
+                getCurrentNodeVersion();
 
-        case 'receive-uninstall':
+                break;
 
-            deleteItemFromList(message.data);
+            case 'receive-uninstall':
 
-            break;
+                deleteItemFromList(message.data);
 
-        case 'receive-on':
+                break;
 
-            setNvmState(message.data);
+            case 'receive-on':
 
-            enableState = message.data;
+                setNvmState(message.data);
 
-            break;
+                enableState = message.data;
 
-        case 'receive-off':
+                getCurrentNodeVersion();
 
-            setNvmState(message.data);
+                break;
 
-            enableState = message.data;
+            case 'receive-off':
 
-            break;
+                setNvmState(message.data);
 
-        default:
-            break;
+                enableState = message.data;
+
+                getCurrentNodeVersion();
+
+                break;
+
+            default:
+                break;
+        }
+
+    } catch (error) {
+        console.error(error);
     }
-
 
 });
 
 
 searchBar.addEventListener('input', () => {
 
-    if (searchBar.value === '') {
-        itemList.innerHTML = '';
-        itemListOriginalOrder.forEach((originalItem) => {
-            itemList.appendChild(originalItem.cloneNode(true));
+    try {
+
+        if (searchBar.value === '') {
+            itemList.innerHTML = '';
+            itemListOriginalOrder.forEach((originalItem) => {
+                itemList.appendChild(originalItem.cloneNode(true));
+            });
+            return;
+        }
+
+        const children = Array.from(itemList.children);
+
+        const filteredChildren = children.filter((child) => {
+            return child.textContent.toLowerCase().includes(searchBar.value.toLowerCase());
         });
-        return;
+
+        filteredChildren.sort((a, b) => {
+            return a.textContent.localeCompare(b.textContent);
+        });
+
+        itemList.innerHTML = '';
+
+        filteredChildren.forEach((child) => {
+            itemList.appendChild(child);
+        });
+
+    } catch (error) {
+        console.error(error);
     }
-
-    const children = Array.from(itemList.children);
-
-    const filteredChildren = children.filter((child) => {
-        return child.textContent.toLowerCase().includes(searchBar.value.toLowerCase());
-    });
-
-    filteredChildren.sort((a, b) => {
-        return a.textContent.localeCompare(b.textContent);
-    });
-
-    itemList.innerHTML = '';
-
-    filteredChildren.forEach((child) => {
-        itemList.appendChild(child);
-    });
 
 });
 
 enableButton.addEventListener('click', () => {
 
-    if (enableState) {
+    try {
 
-        if (enableState.includes('No current version')) {
-            enableNVM();
-        } else {
-            disableNVM();
+        if (enableState) {
+
+            if (enableState.includes('No current version')) {
+                enableNVM();
+            } else {
+                disableNVM();
+            }
+
         }
 
+    } catch (error) {
+        console.error(error);
     }
 
 });
@@ -193,60 +215,65 @@ async function disableNVM() {
 
 function createNodeItem(item) {
 
-    const nodeItem = document.createElement('div');
-    nodeItem.classList.add('node-item');
+    try {
 
-    let id = item.replace(/\./g, '_');
+        const nodeItem = document.createElement('div');
+        nodeItem.classList.add('node-item');
 
-    id = 'v' + id;
+        let id = item.replace(/\./g, '_');
+
+        id = 'v' + id;
 
 
-    nodeItem.setAttribute('id', id);
+        nodeItem.setAttribute('id', id);
 
-    const nodeItemContent = document.createElement('div');
-    nodeItemContent.classList.add('node-item-content');
+        const nodeItemContent = document.createElement('div');
+        nodeItemContent.classList.add('node-item-content');
 
-    const version = document.createElement('span');
-    version.classList.add('version');
-    version.textContent = item;
+        const version = document.createElement('span');
+        version.classList.add('version');
+        version.textContent = item;
 
-    const tag = document.createElement('span');
-    tag.classList.add('tag', 'current');
-    tag.textContent = 'current';
+        const tag = document.createElement('span');
+        tag.classList.add('tag', 'current');
+        tag.textContent = 'current';
 
-    const options = document.createElement('div');
-    options.classList.add('options');
+        const options = document.createElement('div');
+        options.classList.add('options');
 
-    const setOption = document.createElement('a');
-    const setIcon = document.createElement('i');
-    setOption.classList.add('action');
-    setIcon.classList.add('codicon', 'codicon-run');
-    setOption.appendChild(setIcon);
+        const setOption = document.createElement('a');
+        const setIcon = document.createElement('i');
+        setOption.classList.add('action');
+        setIcon.classList.add('codicon', 'codicon-run');
+        setOption.appendChild(setIcon);
 
-    const deleteOption = document.createElement('a');
-    const deleteIcon = document.createElement('i');
-    deleteOption.classList.add('action');
-    deleteIcon.classList.add('codicon', 'codicon-close');
-    deleteOption.appendChild(deleteIcon);
+        const deleteOption = document.createElement('a');
+        const deleteIcon = document.createElement('i');
+        deleteOption.classList.add('action');
+        deleteIcon.classList.add('codicon', 'codicon-close');
+        deleteOption.appendChild(deleteIcon);
 
-    options.appendChild(setOption);
-    options.appendChild(deleteOption);
+        options.appendChild(setOption);
+        options.appendChild(deleteOption);
 
-    nodeItem.appendChild(nodeItemContent);
-    nodeItemContent.appendChild(version);
-    nodeItemContent.appendChild(tag);
-    nodeItemContent.appendChild(options);
+        nodeItem.appendChild(nodeItemContent);
+        nodeItemContent.appendChild(version);
+        nodeItemContent.appendChild(tag);
+        nodeItemContent.appendChild(options);
 
-    itemList.appendChild(nodeItem);
+        itemList.appendChild(nodeItem);
 
-    setOption.addEventListener('click', () => {
-        useNodeVersion(item);
-    });
+        setOption.addEventListener('click', () => {
+            useNodeVersion(item);
+        });
 
-    deleteOption.addEventListener('click', () => {
-        uninstallNodeVersion(item);
-    });
+        deleteOption.addEventListener('click', () => {
+            uninstallNodeVersion(item);
+        });
 
+    } catch (error) {
+        console.error(error);
+    }
 
 }
 
@@ -290,7 +317,7 @@ function changeCurrentStateFromList(id) {
         }
 
     } catch (error) {
-        console.error('Item not defined: ' + error);
+        console.error(error);
     }
 
 }
@@ -307,8 +334,8 @@ function deleteItemFromList(id) {
 
         itemList.removeChild(deletedItem);
 
-    } catch {
-        console.error('Item not defined');
+    } catch (error) {
+        console.error(error);
     }
 
 
@@ -316,25 +343,31 @@ function deleteItemFromList(id) {
 
 function setNvmState(currentState) {
 
-    const icon = enableButton.querySelector('.footer-icon');
+    try {
 
-    const text = enableButton.querySelector('.footer-text');
+        const icon = enableButton.querySelector('.footer-icon');
 
-    if (currentState.includes('No current version')) {
+        const text = enableButton.querySelector('.footer-text');
 
-        icon.classList.remove('codicon-sync', 'on');
-        icon.classList.add('codicon-sync-ignored', 'off');
+        if (currentState.includes('No current version')) {
 
-        text.textContent = 'OFF';
+            icon.classList.remove('codicon-sync', 'on');
+            icon.classList.add('codicon-sync-ignored', 'off');
+
+            text.textContent = 'OFF';
 
 
-    } else {
+        } else {
 
-        icon.classList.remove('codicon-sync-ignored', 'off');
-        icon.classList.add('codicon-sync', 'on');
+            icon.classList.remove('codicon-sync-ignored', 'off');
+            icon.classList.add('codicon-sync', 'on');
 
-        text.textContent = 'ON ';
+            text.textContent = 'ON ';
 
+        }
+
+    } catch (error) {
+        console.error(error);
     }
 
 }
