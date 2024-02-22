@@ -6,17 +6,17 @@ Node Visual Manager is a VSCode extension that shows the NVM functionalities dir
 
 NVM has the following functionalities.
 
-![Preview](https://github.com/Kanin-020/Node-Visual-Manager/tree/main/resources/preview.gif)
+![Preview](https://raw.githubusercontent.com/Kanin-020/Node-Visual-Manager/main/resources/preview.gif?token=GHSAT0AAAAAACM6APEBQQ3ZMUUN2THD75RMZOXNBPQ)
 
-#### Install versions (Current, LTS, Old versions)
+- #### Install versions (Current, LTS, Old versions)
 
-#### Uninstall versions of node
+- #### Uninstall versions of node
 
-#### Switch between versions
+- #### Switch between versions
 
-#### Activate NVM
+- #### Enable NVM
 
-#### Disable NVM
+- #### Disable NVM
 
 ## Requirements
 
@@ -29,8 +29,6 @@ It is necessary to have version 1.1.11 installed in the case of Windows.
 At the moment it is only compatible with Windows, in the future compatibility with the version of Bash for MacOS and Linux will be added.
 
 ## Release Notes
-
-Users appreciate release notes as you update your extension.
 
 ### 1.0.0
 
