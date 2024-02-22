@@ -36,9 +36,13 @@ export class AvailableProvider implements vscode.WebviewViewProvider {
 
                     const installResponse = await installVersion(data.data);
 
-                    vscode.window.showInformationMessage(installResponse.message);
+                    if (installResponse) {
 
-                    webviewView.webview.postMessage({ type: 'receive-install', data: installResponse.id });
+                        vscode.window.showInformationMessage(installResponse.message);
+
+                        webviewView.webview.postMessage({ type: 'receive-install', data: installResponse.id });
+
+                    }
 
                     break;
 

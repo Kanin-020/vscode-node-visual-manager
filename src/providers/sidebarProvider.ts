@@ -64,9 +64,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
                     const deleteResponse = await uninstallVersion(data.data);
 
-                    vscode.window.showInformationMessage(deleteResponse.message);
+                    if (deleteResponse) {
 
-                    webviewView.webview.postMessage({ type: 'receive-uninstall', data: deleteResponse.id });
+                        vscode.window.showInformationMessage(deleteResponse.message);
+
+                        webviewView.webview.postMessage({ type: 'receive-uninstall', data: deleteResponse.id });
+
+                    }
 
                     break;
 
@@ -77,9 +81,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
                     const currentResponse = await getCurrent();
 
-                    vscode.window.showInformationMessage(enableResponse);
+                    if (enableResponse) {
 
-                    webviewView.webview.postMessage({ type: 'receive-on', data: currentResponse });
+                        vscode.window.showInformationMessage(enableResponse);
+
+                        webviewView.webview.postMessage({ type: 'receive-on', data: currentResponse });
+
+                    }
 
                     break;
 
@@ -90,9 +98,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
                     const currentResponse = await getCurrent();
 
-                    vscode.window.showInformationMessage(disableResponse);
+                    if (disableResponse) {
 
-                    webviewView.webview.postMessage({ type: 'receive-off', data: currentResponse });
+                        vscode.window.showInformationMessage(disableResponse);
+
+                        webviewView.webview.postMessage({ type: 'receive-off', data: currentResponse });
+
+                    }
 
                     break;
 

@@ -30,8 +30,7 @@ async function verifyNvmIsInstalled() {
         }
 
     } catch (error) {
-        console.error(`Error al ejecutar el comando: ${error}`);
-        throw error;
+        console.error(error);
     }
 
 }
@@ -40,7 +39,11 @@ async function getNodeVersionList() {
 
     try {
 
-        const { stdout } = await execAsync('nvm list');
+        const { stdout, stderr } = await execAsync('nvm list');
+
+        if (stderr) {
+            throw new Error(stderr);
+        }
 
         const versionRegex = /\b\d+\.\d+\.\d+\b/g;
 
@@ -49,8 +52,7 @@ async function getNodeVersionList() {
         return versionList;
 
     } catch (error) {
-        console.error(`Error al ejecutar el comando: ${error}`);
-        throw error;
+        console.error(error);
     }
 
 }
@@ -58,10 +60,13 @@ async function getNodeVersionList() {
 async function getNodeVersionAvailableList() {
 
     try {
+
+
+
         const { stdout, stderr } = await execAsync('nvm list available');
 
         if (stderr) {
-            return;
+            throw new Error(stderr);
         }
 
         const lines = stdout.split('\n');
@@ -132,8 +137,7 @@ async function getNodeVersionAvailableList() {
         return sortedVersionList;
 
     } catch (error) {
-        console.error(`Error al ejecutar el comando: ${error}`);
-        throw error;
+        console.error(error);
     }
 
 }
@@ -143,13 +147,17 @@ getNodeVersionAvailableList();
 async function installNodeVersion(version: string) {
 
     try {
-        const { stdout } = await execAsync('nvm install ' + version);
+
+        const { stdout, stderr } = await execAsync('nvm install ' + version);
+
+        if (stderr) {
+            throw new Error(stderr);
+        }
 
         return { message: stdout, id: version };
 
     } catch (error) {
-        console.error(`Error al ejecutar el comando: ${error}`);
-        throw error;
+        console.error(error);
     }
 
 }
@@ -158,13 +166,16 @@ async function uninstallNodeVersion(version: string) {
 
     try {
 
-        const { stdout } = await execAsync('nvm uninstall ' + version);
+        const { stdout, stderr } = await execAsync('nvm uninstall ' + version);
+
+        if (stderr) {
+            throw new Error(stderr);
+        }
 
         return { message: stdout, id: version };
 
     } catch (error) {
-        console.error(`Error al ejecutar el comando: ${error}`);
-        throw error;
+        console.error(error);
     }
 
 }
@@ -176,14 +187,13 @@ async function useNodeVersion(version: string) {
         const { stdout, stderr } = await execAsync('nvm use ' + version);
 
         if (stderr) {
-            return;
+            throw new Error(stderr);
         }
 
         return { message: stdout, id: version };
 
     } catch (error) {
-        console.error(`Error al ejecutar el comando: ${error}`);
-        throw error;
+        console.error(error);
     }
 
 }
@@ -194,11 +204,14 @@ async function getCurrentNodeVersion() {
 
         const { stdout, stderr } = await execAsync('nvm current');
 
+        if (stderr) {
+            throw new Error(stderr);
+        }
+
         return stdout;
 
     } catch (error) {
-        console.error(`Error al ejecutar el comando: ${error}`);
-        throw error;
+        console.error(error);
     }
 
 }
@@ -209,11 +222,14 @@ async function enableNVM() {
 
         const { stdout, stderr } = await execAsync('nvm on');
 
+        if (stderr) {
+            throw new Error(stderr);
+        }
+
         return stdout;
 
     } catch (error) {
-        console.error(`Error al ejecutar el comando: ${error}`);
-        throw error;
+        console.error(error);
     }
 
 }
@@ -224,11 +240,14 @@ async function disableNVM() {
 
         const { stdout, stderr } = await execAsync('nvm off');
 
+        if (stderr) {
+            throw new Error(stderr);
+        }
+
         return stdout;
 
     } catch (error) {
-        console.error(`Error al ejecutar el comando: ${error}`);
-        throw error;
+        console.error(error);
     }
 
 }
