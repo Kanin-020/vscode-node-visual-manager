@@ -15,6 +15,50 @@ body {
     height: 100%;
 }
 
+.footer {
+    padding: 0 7px;
+    display: flex;
+    -moz-column-gap: 4px;
+    column-gap: 4px;
+    border-top: 1px solid var(--vscode-panel-border);
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    justify-content: space-between;
+}
+
+.footer-item {
+    height: 100%;
+    padding: 3px 6px;
+    display: grid;
+    grid-auto-flow: column;
+    -moz-column-gap: 4px;
+    column-gap: 4px;
+    align-items: center;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.footer-item-content {
+    height: 100%;
+    padding: 3px 6px;
+    display: grid;
+    grid-auto-flow: column;
+    -moz-column-gap: 4px;
+    column-gap: 4px;
+    align-items: center;
+    cursor: pointer;
+    color: var(--vscode-descriptionForeground);
+}
+
+.on {
+    color: var(--vscode-charts-green);
+}
+
+.off {
+    color: var(--vscode-charts-red);
+}
+
 .title {
     margin-bottom: 0.25rem;
     padding: 1rem 0.75rem 0;
@@ -115,4 +159,12 @@ body {
     .show {
         display: none !important;
     }
+}
+
+.footer-item:hover {
+    background: var(--vscode-toolbar-hoverBackground);
+}
+
+.heart {
+    color: transparent !important;
 }

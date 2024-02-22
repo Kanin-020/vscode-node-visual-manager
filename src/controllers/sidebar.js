@@ -1,5 +1,7 @@
 var itemListOriginalOrder;
 
+var enableState;
+
 verifyNvmIsInstalled();
 
 getCurrentNodeVersion();
@@ -9,6 +11,10 @@ getNodeVersionList();
 const itemList = document.getElementById('item-list');
 
 const searchBar = document.getElementById('search-bar');
+
+const footer = document.getElementById('footer');
+
+const enableButton = document.getElementById('enable-button');
 
 
 window.addEventListener('message', async (event) => {
@@ -38,6 +44,10 @@ window.addEventListener('message', async (event) => {
 
             changeCurrentStateFromList(message.data);
 
+            enableState = message.data;
+
+            setNvmState(message.data);
+
             break;
 
         case 'receive-use':
@@ -49,6 +59,22 @@ window.addEventListener('message', async (event) => {
         case 'receive-uninstall':
 
             deleteItemFromList(message.data);
+
+            break;
+
+        case 'receive-on':
+
+            setNvmState(message.data);
+
+            enableState = message.data;
+
+            break;
+
+        case 'receive-off':
+
+            setNvmState(message.data);
+
+            enableState = message.data;
 
             break;
 
@@ -85,6 +111,20 @@ searchBar.addEventListener('input', () => {
     filteredChildren.forEach((child) => {
         itemList.appendChild(child);
     });
+
+});
+
+enableButton.addEventListener('click', () => {
+
+    if (enableState) {
+
+        if (enableState.includes('No current version')) {
+            enableNVM();
+        } else {
+            disableNVM();
+        }
+
+    }
 
 });
 
@@ -128,6 +168,23 @@ async function uninstallNodeVersion(id) {
     clientVsCode.postMessage({
         type: 'send-uninstall',
         data: id
+    });
+
+}
+
+async function enableNVM() {
+
+    clientVsCode.postMessage({
+        type: 'send-on',
+    });
+
+
+}
+
+async function disableNVM() {
+
+    clientVsCode.postMessage({
+        type: 'send-off',
     });
 
 }
@@ -257,3 +314,27 @@ function deleteItemFromList(id) {
 
 }
 
+function setNvmState(currentState) {
+
+    const icon = enableButton.querySelector('.footer-icon');
+
+    const text = enableButton.querySelector('.footer-text');
+
+    if (currentState.includes('No current version')) {
+
+        icon.classList.remove('codicon-sync', 'on');
+        icon.classList.add('codicon-sync-ignored', 'off');
+
+        text.textContent = 'OFF';
+
+
+    } else {
+
+        icon.classList.remove('codicon-sync-ignored', 'off');
+        icon.classList.add('codicon-sync', 'on');
+
+        text.textContent = 'ON ';
+
+    }
+
+}

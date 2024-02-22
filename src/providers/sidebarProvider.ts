@@ -71,6 +71,32 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     break;
 
                 }
+                case "send-on": {
+
+                    const enableResponse = await enable();
+
+                    const currentResponse = await getCurrent();
+
+                    vscode.window.showInformationMessage(enableResponse);
+
+                    webviewView.webview.postMessage({ type: 'receive-on', data: currentResponse });
+
+                    break;
+
+                }
+                case "send-off": {
+
+                    const disableResponse = await disable();
+
+                    const currentResponse = await getCurrent();
+
+                    vscode.window.showInformationMessage(disableResponse);
+
+                    webviewView.webview.postMessage({ type: 'receive-off', data: currentResponse });
+
+                    break;
+
+                }
                 case "onInfo": {
                     if (!data.value) {
                         return;
@@ -187,6 +213,22 @@ async function useVersion(version: string) {
 async function uninstallVersion(version: string) {
 
     const response = await nvm.uninstallNodeVersion(version);
+
+    return response;
+
+}
+
+async function enable() {
+
+    const response = await nvm.enableNVM();
+
+    return response;
+
+}
+
+async function disable() {
+
+    const response = await nvm.disableNVM();
 
     return response;
 
