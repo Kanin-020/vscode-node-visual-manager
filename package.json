@@ -3,6 +3,8 @@
   "displayName": "Node Visual Manager",
   "description": "",
   "version": "1.0.0",
+  "publisher": "kanin-020",
+  "icon": "./resources/icon.png",
   "engines": {
     "vscode": "^1.86.0"
   },
