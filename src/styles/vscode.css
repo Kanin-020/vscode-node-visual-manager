@@ -105,3 +105,31 @@ input::placeholder,
 textarea::placeholder {
     color: var(--vscode-input-placeholderForeground);
 }
+
+::selection {
+    background: var(--vscode-selection-background);
+    color: var(--vscode-input-foreground);
+}
+
+.search-container .codicon {
+    width: 14px;
+    position: absolute;
+    right: 25px;
+    font-size: 14px !important;
+}
+
+.options .codicon {
+    cursor: pointer;
+    background: none;
+    border: none;
+    flex-grow: 0;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 4px;
+    padding: 2px;
+    color: var(--vscode-foreground);
+}
+
+.options .codicon:hover {
+    background: var(--vscode-toolbar-hoverBackground);
+}

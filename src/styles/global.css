@@ -34,4 +34,7 @@ body {
     height: 100%;
     display: flex;
     flex-direction: column;
+    user-select: none;
+    overflow: hidden;
+    color: var(--vscode-foreground);
 }
