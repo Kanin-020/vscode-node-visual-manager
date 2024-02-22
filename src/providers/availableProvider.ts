@@ -4,7 +4,7 @@ import fs from 'fs';
 import { getNonce } from './getNonce';
 import nvm from '../model/nvm';
 
-export class SidebarProvider implements vscode.WebviewViewProvider {
+export class AvailableProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
     _doc?: vscode.TextDocument;
 
@@ -24,49 +24,21 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
-                case "send-nvm": {
+                case "send-list-available": {
 
-                    isInstalled(data);
+                    const nodeList = await getRemoteList();
 
-                    break;
-                }
-                case "send-list": {
-
-                    const nodeList = await getList();
-
-                    webviewView.webview.postMessage({ type: 'receive-list', data: nodeList });
+                    webviewView.webview.postMessage({ type: 'receive-list-available', data: nodeList });
 
                     break;
                 }
-                case "send-current": {
+                case "send-install": {
 
-                    const currentNodeVersion = await getCurrent();
+                    const installResponse = await installVersion(data.data);
 
-                    webviewView.webview.postMessage({ type: 'receive-current', data: currentNodeVersion });
+                    vscode.window.showInformationMessage(installResponse.message);
 
-                    break;
-                }
-                case "send-use": {
-
-                    const useResponse = await useVersion(data.data);
-
-                    if (useResponse) {
-
-                        vscode.window.showInformationMessage(useResponse.message);
-
-                        webviewView.webview.postMessage({ type: 'receive-use', data: useResponse.id });
-
-                    }
-
-                    break;
-                }
-                case "send-uninstall": {
-
-                    const deleteResponse = await uninstallVersion(data.data);
-
-                    vscode.window.showInformationMessage(deleteResponse.message);
-
-                    webviewView.webview.postMessage({ type: 'receive-uninstall', data: deleteResponse.id });
+                    webviewView.webview.postMessage({ type: 'receive-install', data: installResponse.id });
 
                     break;
 
@@ -110,10 +82,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             vscode.Uri.joinPath(this._extensionUri, "src/styles", "sidebar.css")
         );
         const scriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "src/controllers", "sidebar.js")
+            vscode.Uri.joinPath(this._extensionUri, "src/controllers", "available.js")
         );
 
-        const htmlFilePath = vscode.Uri.joinPath(this._extensionUri, "src/pages", "sidebar.html").fsPath;
+        const htmlFilePath = vscode.Uri.joinPath(this._extensionUri, "src/pages", "available.html").fsPath;
         const htmlString = fs.readFileSync(htmlFilePath, 'utf-8');
 
         const nonce = getNonce();
@@ -148,45 +120,16 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
 }
 
-async function isInstalled(data: any) {
+async function getRemoteList() {
 
-    const response = await nvm.verifyNvmIsInstalled();
-
-    data.value = response;
-
-    if (response === false) {
-        vscode.window.showErrorMessage('NVM is not installed');
-    }
-
-}
-
-async function getList() {
-
-    const response = await nvm.getNodeVersionList();
+    const response = await nvm.getNodeVersionAvailableList();
 
     return response;
-
 }
 
-async function getCurrent() {
+async function installVersion(version: string) {
 
-    const response = await nvm.getCurrentNodeVersion();
-
-    return response;
-
-}
-
-async function useVersion(version: string) {
-
-    const response = await nvm.useNodeVersion(version);
-
-    return response;
-
-}
-
-async function uninstallVersion(version: string) {
-
-    const response = await nvm.uninstallNodeVersion(version);
+    const response = await nvm.installNodeVersion(version);
 
     return response;
 

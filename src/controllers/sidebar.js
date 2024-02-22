@@ -132,8 +132,6 @@ async function uninstallNodeVersion(id) {
 
 }
 
-
-
 //View rendering functions
 
 function createNodeItem(item) {
@@ -213,7 +211,7 @@ function changeCurrentStateFromList(id) {
 
         for (let i = 0; i < itemChildrenList.length; i++) {
 
-            if(itemChildrenList[i].id.includes('v')){
+            if (itemChildrenList[i].id.includes('v')) {
                 idList.push(itemChildrenList[i].id);
             }
 
@@ -244,7 +242,9 @@ function deleteItemFromList(id) {
 
     try {
 
-        const castedId = id.replace(/\./g, '_');
+        let castedId = id.replace(/\./g, '_');
+
+        castedId = 'v' + castedId;
 
         const deletedItem = document.getElementById(castedId);
 

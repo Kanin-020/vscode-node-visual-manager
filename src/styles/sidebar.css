@@ -85,6 +85,22 @@ body {
     color: var(--vscode-gitDecoration-untrackedResourceForeground);
 }
 
+.remote {
+    color: var(--vscode-list-highlightForeground);
+}
+
+.lts {
+    color: var(--vscode-inputValidation-infoBorder);
+}
+
+.old-stable {
+    color: var(--vscode-inputValidation-warningBorder);
+}
+
+.old-unstable {
+    color: var(--vscode-inputValidation-errorBorder);
+}
+
 .node-item:hover {
     background-color: var(--vscode-list-hoverBackground);
 

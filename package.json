@@ -36,8 +36,8 @@
         },
         {
           "type": "webview",
-          "id": "node-visual-manager-sidebar-remotes",
-          "name": "Remote Node Versions"
+          "id": "node-visual-manager-sidebar-available",
+          "name": "Available Node Versions"
         }
       ]
     }
