@@ -81,22 +81,26 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     private _getHtmlForWebview(webview: vscode.Webview): string {
 
         const styleGlobalUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "src/styles", "global.css")
-        );
-        const styleVSCodeUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "src/styles", "vscode.css")
-        );
-        const styleIconsUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css')
-        );
-        const styleSidebar = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "src/styles", "sidebar.css")
-        );
-        const scriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "src/controllers", "sidebar.js")
+            vscode.Uri.joinPath(this._extensionUri, "dist", "styles/global.css")
         );
 
-        const htmlFilePath = vscode.Uri.joinPath(this._extensionUri, "src/pages", "sidebar.html").fsPath;
+        const styleVSCodeUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this._extensionUri, "dist", "styles/vscode.css")
+        );
+
+        const styleSidebar = webview.asWebviewUri(
+            vscode.Uri.joinPath(this._extensionUri, "dist", "styles/sidebar.css")
+        );
+
+        const styleIconsUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this._extensionUri, "dist", "styles/codicon.css")
+        );
+
+        const scriptUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this._extensionUri, "dist", "controllers/sidebar.js")
+        );
+
+        const htmlFilePath = vscode.Uri.joinPath(this._extensionUri, "dist", "pages/sidebar.html").fsPath;
         const htmlString = fs.readFileSync(htmlFilePath, 'utf-8');
 
         const nonce = getNonce();
@@ -108,7 +112,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Cat Coding</title>
 
-                <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
+                <meta http-equiv="Content-Security-Policy" content="font-src ${webview.cspSource}; img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
 
                 <link href="${styleSidebar}" rel="stylesheet">
                 <link href="${styleVSCodeUri}" rel="stylesheet">
