@@ -131,6 +131,8 @@ async function installVersion(version: string, webviewView: vscode.WebviewView) 
 
     try {
 
+        vscode.window.showInformationMessage('Installing node version: ' + version);
+
         const response = await nvm.installNodeVersion(version);
 
         if (response.error) {
@@ -139,10 +141,9 @@ async function installVersion(version: string, webviewView: vscode.WebviewView) 
 
         if (response.message) {
             vscode.window.showInformationMessage(response.message);
+            vscode.window.showInformationMessage(`Complete node v${version} installed successfully.`);
             webviewView.webview.postMessage({ type: 'receive-install', data: response.id });
         }
-
-
 
     } catch (error) {
 

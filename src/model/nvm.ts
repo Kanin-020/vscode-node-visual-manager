@@ -171,7 +171,18 @@ async function installNodeVersion(version: string) {
             throw new Error(stderr);
         }
 
-        return { message: stdout, id: version };
+        let lines = stdout.split('\n');
+
+        lines.shift();
+        lines.shift();
+
+        let index = lines.findIndex(linea => linea.startsWith('Installation complete.'));
+
+        lines.splice(index);
+
+        let message = lines.join('\n');
+
+        return { message: message, id: version };
 
     } catch (error) {
         console.error(error);
