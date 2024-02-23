@@ -1,9 +1,11 @@
 import { exec } from 'child_process';
+import os from 'node:os';
 import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
 const nvm = {
+    verifyUserSystem,
     verifyNvmIsInstalled,
     getNodeVersionList,
     getNodeVersionAvailableList,
@@ -15,11 +17,20 @@ const nvm = {
     disableNVM,
 };
 
+async function verifyUserSystem() {
+
+    const operativeSystem = os.platform();
+
+    return { operativeSystem: operativeSystem };
+}
+
 async function verifyNvmIsInstalled() {
 
     try {
 
         const { stdout, stderr } = await execAsync('nvm --version');
+
+        verifyUserSystem();
 
         if (stderr) {
             return false;
