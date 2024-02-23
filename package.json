@@ -1,17 +1,21 @@
 {
   "name": "node-visual-manager",
   "displayName": "Node Visual Manager",
-  "description": "",
   "version": "1.0.0",
   "publisher": "kanin-020",
-  "icon": "./resources/icon.png",
+  "description": "Node Version Manager adaptation for VSCode.",
+  "author": {
+    "name": "Jesus Miguel Alvarez Vazquez"
+  },
+  "categories": [
+    "Visualization"
+  ],
+  "icon": "resources/icon.png",
+  "pricing": "Free",
+  "activationEvents": [],
   "engines": {
     "vscode": "^1.86.0"
   },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
     "viewsContainers": {
@@ -69,5 +73,15 @@
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.35"
-  }
+  },
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "bugs": {
+    "url": "https://github.com/Kanin-020/Node-Visual-Manager-Issues",
+    "email": "jesus.alvarez.vazquez@hotmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kanin-020/Node-Visual-Manager-Issues"
+  },
+  "homepage": "https://github.com/Kanin-020/Node-Visual-Manager/blob/main/README.md"
 }

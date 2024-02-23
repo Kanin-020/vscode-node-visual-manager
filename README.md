@@ -4,19 +4,19 @@ Node Visual Manager is a VSCode extension that shows the NVM functionalities dir
 
 ## Features
 
+![Preview](/resources/preview.gif)
+
 NVM has the following functionalities.
 
-![Preview](https://jesus-alvarez-portfolio.web.app/assets/images/Portfolio/NVM/preview.gif)
+- ### Install versions (Current, LTS, Old versions)
 
-- #### Install versions (Current, LTS, Old versions)
+- ### Uninstall versions of node
 
-- #### Uninstall versions of node
+- ### Switch between versions
 
-- #### Switch between versions
+- ### Enable NVM
 
-- #### Enable NVM
-
-- #### Disable NVM
+- ### Disable NVM
 
 ## Requirements
 
