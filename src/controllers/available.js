@@ -132,6 +132,9 @@ function createNodeItem(item) {
             case 'Old Unstable':
                 tag.classList.add('old-unstable');
                 break;
+            case 'Common':
+                tag.classList.add('remote');
+                break;
 
             default:
                 break;

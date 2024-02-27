@@ -222,7 +222,9 @@ function createNodeItem(item) {
 
         let id = item.replace(/\./g, '_');
 
-        id = 'v' + id;
+        if(id !== 'system'){
+            id = 'v' + id;
+        }
 
 
         nodeItem.setAttribute('id', id);
@@ -295,7 +297,7 @@ function changeCurrentStateFromList(id) {
 
         for (let i = 0; i < itemChildrenList.length; i++) {
 
-            if (itemChildrenList[i].id.includes('v')) {
+            if (itemChildrenList[i].id.includes('v') || itemChildrenList[i].id.includes('system')) {
                 idList.push(itemChildrenList[i].id);
             }
 
@@ -328,7 +330,9 @@ function deleteItemFromList(id) {
 
         let castedId = id.replace(/\./g, '_');
 
-        castedId = 'v' + castedId;
+        if(castedId !== 'system'){
+            castedId = 'v' + castedId;
+        }
 
         const deletedItem = document.getElementById(castedId);
 

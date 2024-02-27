@@ -25,6 +25,7 @@ body {
     position: absolute;
     bottom: 0;
     justify-content: space-between;
+    background: var(--vscode-sideBar-background);
 }
 
 .footer-item {

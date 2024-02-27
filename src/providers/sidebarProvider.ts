@@ -3,6 +3,8 @@ import * as vscode from 'vscode';
 import fs from 'fs';
 import { getNonce } from './getNonce';
 import nvm from '../model/nvm';
+import nvmLinux from '../model/nvmLinux';
+import nvmWindows from '../model/nvmWindows';
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
@@ -157,13 +159,34 @@ async function getList(webviewView: vscode.WebviewView) {
 
     try {
 
-        const response = await nvm.getNodeVersionList();
+        const systemResponse = await nvm.verifyUserSystem();
 
-        if (response.error) {
+        let response;
+
+        switch (systemResponse.operativeSystem) {
+            case 'win32':
+                response = await nvmWindows.getNodeVersionList();
+                break;
+
+            case 'linux':
+                response = await nvmLinux.getNodeVersionList();
+                break;
+
+            case 'darwin':
+                response = await nvmLinux.getNodeVersionList();
+                break;
+
+            default:
+                vscode.window.showErrorMessage('Operative system not supported yet.');
+                throw Error;
+        }
+
+
+        if (response && response.error) {
             vscode.window.showErrorMessage('Could not get node version list.');
         }
 
-        if (response.nodeList) {
+        if (response && response.nodeList) {
             webviewView.webview.postMessage({ type: 'receive-list', data: response.nodeList });
         }
 
@@ -178,7 +201,27 @@ async function getCurrent(webviewView: vscode.WebviewView) {
 
     try {
 
-        const response = await nvm.getCurrentNodeVersion();
+        const systemResponse = await nvm.verifyUserSystem();
+
+        let response;
+
+        switch (systemResponse.operativeSystem) {
+            case 'win32':
+                response = await nvmWindows.getCurrentNodeVersion();
+                break;
+
+            case 'linux':
+                response = await nvmLinux.getCurrentNodeVersion();
+                break;
+
+            case 'darwin':
+                response = await nvmLinux.getCurrentNodeVersion();
+                break;
+
+            default:
+                vscode.window.showErrorMessage('Operative system not supported yet.');
+                throw Error;
+        }
 
         if (response.error) {
             return;
@@ -199,7 +242,29 @@ async function getCurrent(webviewView: vscode.WebviewView) {
 
 async function useVersion(version: string, webviewView: vscode.WebviewView) {
 
-    const response = await nvm.useNodeVersion(version);
+
+    const systemResponse = await nvm.verifyUserSystem();
+
+    let response;
+
+    switch (systemResponse.operativeSystem) {
+        case 'win32':
+            response = await nvmWindows.useNodeVersion(version);
+            break;
+
+        case 'linux':
+            response = await nvmLinux.useNodeVersion(version);
+            break;
+
+        case 'darwin':
+            response = await nvmLinux.useNodeVersion(version);
+            break;
+
+        default:
+            vscode.window.showErrorMessage('Operative system not supported yet.');
+            throw Error;
+    }
+
 
     if (response.error) {
         vscode.window.showErrorMessage('Could not set version to: ' + version);
@@ -216,7 +281,27 @@ async function useVersion(version: string, webviewView: vscode.WebviewView) {
 
 async function uninstallVersion(version: string, webviewView: vscode.WebviewView) {
 
-    const response = await nvm.uninstallNodeVersion(version);
+    const systemResponse = await nvm.verifyUserSystem();
+
+    let response;
+
+    switch (systemResponse.operativeSystem) {
+        case 'win32':
+            response = await nvmWindows.uninstallNodeVersion(version);
+            break;
+
+        case 'linux':
+            response = await nvmLinux.uninstallNodeVersion(version);
+            break;
+
+        case 'darwin':
+            response = await nvmLinux.uninstallNodeVersion(version);
+            break;
+
+        default:
+            vscode.window.showErrorMessage('Operative system not supported yet.');
+            throw Error;
+    }
 
     if (response.error) {
         vscode.window.showErrorMessage('Could not uninstall the selected version.');
@@ -234,9 +319,9 @@ async function uninstallVersion(version: string, webviewView: vscode.WebviewView
 
 async function enable(webviewView: vscode.WebviewView) {
 
-    const response = await nvm.enableNVM();
+    const response = await nvmWindows.enableNVM();
 
-    const currentResponse = await nvm.getCurrentNodeVersion();
+    const currentResponse = await nvmWindows.getCurrentNodeVersion();
 
     if (response.error) {
         vscode.window.showInformationMessage('NVM could not be enabled.');
@@ -254,9 +339,9 @@ async function enable(webviewView: vscode.WebviewView) {
 
 async function disable(webviewView: vscode.WebviewView) {
 
-    const response = await nvm.disableNVM();
+    const response = await nvmWindows.disableNVM();
 
-    const currentResponse = await nvm.getCurrentNodeVersion();
+    const currentResponse = await nvmWindows.getCurrentNodeVersion();
 
     if (response.error) {
         vscode.window.showInformationMessage('NVM could not be disabled.');
