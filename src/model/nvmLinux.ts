@@ -16,33 +16,21 @@ async function getNodeVersionList() {
 
     try {
 
-        const { stdout, stderr } = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm list"');
+        const { stdout, stderr } = await execAsync(`. "$HOME/.nvm/nvm.sh" && nvm list`, { shell: '/bin/bash' });
 
         if (stderr) {
             throw new Error(stderr);
         }
 
+        const defaultIndex = stdout.indexOf("default");
+
+        const filteredList = defaultIndex !== -1 ? stdout.slice(0, defaultIndex + 1) : stdout;
+
         const regex = /(\d+\.\d+\.\d+|system)/g;
 
-        const regexList = stdout.match(regex);
+        const versionList = filteredList.match(regex);
 
-        if (regexList) {
-
-            const indiceSystem = regexList.indexOf("system");
-
-            const versionList = indiceSystem !== -1 ? regexList.slice(0, indiceSystem + 1) : regexList;
-
-            if (versionList) {
-
-                return { nodeList: versionList };
-
-            } else {
-
-                throw new Error(stderr);
-
-            }
-
-        }
+        return { nodeList: versionList };
 
     } catch (error) {
         console.error(error);
@@ -55,7 +43,7 @@ async function getNodeVersionAvailableList() {
 
     try {
 
-        const { stdout, stderr } = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm ls-remote"');
+        const { stdout, stderr } = await execAsync(`. "$HOME/.nvm/nvm.sh" && nvm ls-remote`, { shell: '/bin/bash' });
 
         if (stderr) {
             throw new Error(stderr);
@@ -119,7 +107,7 @@ async function getCurrentNodeVersion() {
 
     try {
 
-        const { stdout, stderr } = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm current"');
+        const { stdout, stderr } = await execAsync(`. "$HOME/.nvm/nvm.sh" && nvm current`, { shell: '/bin/bash' });
 
         console.log(stdout);
 
@@ -140,17 +128,11 @@ async function installNodeVersion(version: string) {
 
     try {
 
-        const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm install ${version}"`);
-
-        console.log(stdout);
-
-        console.log(stderr);
-
+        const { stdout, stderr } = await execAsync(`. "$HOME/.nvm/nvm.sh" && nvm install ${version}`, { shell: '/bin/bash' });
 
         if (!stderr.includes('Checksums matched!')) {
             throw new Error(stderr);
         }
-
 
         return { message: stdout, id: version };
 
@@ -165,7 +147,7 @@ async function uninstallNodeVersion(version: string) {
 
     try {
 
-        const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm uninstall ${version}"`);
+        const { stdout, stderr } = await execAsync(`. "$HOME/.nvm/nvm.sh" && nvm uninstall ${version}`, { shell: '/bin/bash' });
 
         if (stderr) {
             throw new Error(stderr);
@@ -184,9 +166,7 @@ async function useNodeVersion(version: string) {
 
     try {
 
-        const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm use ${version}"`);
-
-        console.log(stdout);
+        const { stdout, stderr } = await execAsync(`. "$HOME/.nvm/nvm.sh" && nvm use ${version}`, { shell: '/bin/bash' });
 
         if (stderr) {
             throw new Error(stderr);
