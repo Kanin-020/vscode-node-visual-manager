@@ -16,7 +16,7 @@ async function getNodeVersionList() {
 
     try {
 
-        const { stdout, stderr } = await execAsync(`. "$HOME/.nvm/nvm.sh" && nvm list`, { shell: '/bin/bash' });
+        const { stdout, stderr } = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm list"');
 
         if (stderr) {
             throw new Error(stderr);
@@ -43,7 +43,7 @@ async function getNodeVersionAvailableList() {
 
     try {
 
-        const { stdout, stderr } = await execAsync(`. "$HOME/.nvm/nvm.sh" && nvm ls-remote`, { shell: '/bin/bash' });
+        const { stdout, stderr } = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm ls-remote"');
 
         if (stderr) {
             throw new Error(stderr);
@@ -107,9 +107,7 @@ async function getCurrentNodeVersion() {
 
     try {
 
-        const { stdout, stderr } = await execAsync(`. "$HOME/.nvm/nvm.sh" && nvm current`, { shell: '/bin/bash' });
-
-        console.log(stdout);
+        const { stdout, stderr } = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm current"');
 
         if (stderr) {
             throw new Error(stderr);
@@ -128,7 +126,7 @@ async function installNodeVersion(version: string) {
 
     try {
 
-        const { stdout, stderr } = await execAsync(`. "$HOME/.nvm/nvm.sh" && nvm install ${version}`, { shell: '/bin/bash' });
+        const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm install ${version}"`);
 
         if (!stderr.includes('Checksums matched!')) {
             throw new Error(stderr);
@@ -147,7 +145,7 @@ async function uninstallNodeVersion(version: string) {
 
     try {
 
-        const { stdout, stderr } = await execAsync(`. "$HOME/.nvm/nvm.sh" && nvm uninstall ${version}`, { shell: '/bin/bash' });
+        const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm uninstall ${version}"`);
 
         if (stderr) {
             throw new Error(stderr);
@@ -166,8 +164,8 @@ async function useNodeVersion(version: string) {
 
     try {
 
-        const { stdout, stderr } = await execAsync(`. "$HOME/.nvm/nvm.sh" && nvm use ${version}`, { shell: '/bin/bash' });
-
+        const { stdout, stderr } = await execAsync(`bash -c source ~/.nvm/nvm.sh && nvm alias default ${version}"`);
+        
         if (stderr) {
             throw new Error(stderr);
         }
