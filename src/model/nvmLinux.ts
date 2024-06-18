@@ -126,7 +126,9 @@ async function installNodeVersion(version: string) {
 
     try {
 
-        const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm install ${version}"`);
+        const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm cache clear && nvm install ${version}"`);
+
+        
 
         if (!stderr.includes('Checksums matched!')) {
             throw new Error(stderr);
@@ -145,7 +147,7 @@ async function uninstallNodeVersion(version: string) {
 
     try {
 
-        const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm uninstall ${version}"`);
+        const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm cache clear && nvm uninstall ${version}"`);
 
         if (stderr) {
             throw new Error(stderr);
@@ -164,7 +166,7 @@ async function useNodeVersion(version: string) {
 
     try {
 
-        const { stdout, stderr } = await execAsync(`bash -c source ~/.nvm/nvm.sh && nvm alias default ${version}"`);
+        const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm alias default ${version}"`);
         
         if (stderr) {
             throw new Error(stderr);

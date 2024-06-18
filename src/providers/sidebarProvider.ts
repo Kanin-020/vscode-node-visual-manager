@@ -25,12 +25,21 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
+
+
             switch (data.type) {
                 case "send-nvm": {
 
                     isInstalled(data);
 
                     break;
+                }
+                case "send-os": {
+
+                    getCurrentOS(webviewView);
+
+                    break;
+
                 }
                 case "send-list": {
 
@@ -141,17 +150,51 @@ async function isInstalled(data: any) {
 
     try {
 
+        const systemResponse = await nvm.verifyUserSystem();
+
         const response = await nvm.verifyNvmIsInstalled();
 
         data.value = response;
 
         if (response === false) {
-            vscode.window.showErrorMessage('NVM is not installed');
+
+            await vscode.window.showInformationMessage('Wait for installation ...');
+
+            switch (systemResponse.operativeSystem) {
+                case 'win32':
+                    await nvm.installNvmForWindows();
+                    break;
+
+                case 'linux':await
+                    await nvm.installNvmForLinux();
+                    break;
+
+                case 'darwin':
+                    await nvm.installNvmForLinux();
+                    break;
+
+                default:
+                    vscode.window.showErrorMessage('Operative system not supported yet.');
+                    throw Error;
+            }
+
+            await vscode.commands.executeCommand('workbench.action.webview.reloadWebviewAction');
+
+            await vscode.window.showInformationMessage('NVM installed');
+
         }
 
     } catch (error) {
         console.error(error);
     }
+
+}
+
+async function getCurrentOS(webviewView: vscode.WebviewView) {
+
+    const systemResponse = await nvm.verifyUserSystem();
+
+    webviewView.webview.postMessage({ type: 'receive-os', data: systemResponse.operativeSystem });
 
 }
 

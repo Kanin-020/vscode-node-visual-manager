@@ -187,6 +187,9 @@ async function installVersion(version: string, webviewView: vscode.WebviewView) 
             vscode.window.showInformationMessage(response.message);
             vscode.window.showInformationMessage(`Complete node v${version} installed successfully.`);
             webviewView.webview.postMessage({ type: 'receive-install', data: response.id });
+
+            await vscode.commands.executeCommand('workbench.action.webview.reloadWebviewAction');
+
         }
 
     } catch (error) {

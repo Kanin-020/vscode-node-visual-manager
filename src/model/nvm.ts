@@ -1,12 +1,20 @@
+import path, { join } from 'path';
+
 import { exec } from 'child_process';
+import fs from 'fs';
 import os from 'node:os';
 import { promisify } from 'util';
+import { tmpdir } from 'os';
 
 const execAsync = promisify(exec);
+
+const access = promisify(fs.access);
 
 const nvm = {
     verifyUserSystem,
     verifyNvmIsInstalled,
+    installNvmForWindows,
+    installNvmForLinux,
 };
 
 async function verifyUserSystem() {
@@ -32,45 +40,36 @@ async function verifyNvmIsInstalled() {
         switch (systemResponse.operativeSystem) {
             case 'win32':
 
-                const win32 =  await execAsync('nvm --version');
+                const { stdout, stderr } = await execAsync('nvm --version');
 
-                if (win32.stderr) {
+                if (stderr) {
                     return false;
                 }
 
-                if (win32.stdout) {
+                if (stdout) {
                     return true;
                 }
 
                 break;
 
+            case 'darwin':
             case 'linux':
 
-                const linux = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm --version"');
+                if (process.env.HOME) {
 
-                if (linux.stderr) {
-                    return false;
+                    const nvmDir = process.env.NVM_DIR || path.join(process.env.HOME, '.nvm');
+
+                    try {
+                        await access(nvmDir);
+                        return true;
+                    } catch (err) {
+                        return false;
+                    }
+
                 }
 
-                if (linux.stdout) {
-                    return true;
-                }
+                break;
 
-            break;
-
-            case 'darwin':
-
-                const darwin = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm --version"');
-
-                if (darwin.stderr) {
-                    return false;
-                }
-
-                if (darwin.stdout) {
-                    return true;
-                }
-
-            break;
 
             default:
                 return false;
@@ -79,6 +78,64 @@ async function verifyNvmIsInstalled() {
     } catch (error) {
         console.error(error);
     }
+
+}
+
+async function installNvmForWindows() {
+    import('node-fetch').then(({ default: fetch }) => {
+
+        const url = 'https://github.com/coreybutler/nvm-windows/releases/download/1.1.11/nvm-setup.exe';
+
+        const tempFilePath = join(tmpdir(), 'nvm-setup.exe');
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(response.statusText);
+                }
+                return response.buffer();
+            })
+            .then(buffer => {
+
+                require('fs').writeFileSync(tempFilePath, buffer);
+
+                exec(tempFilePath, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error(error.message);
+                        return;
+                    }
+
+                });
+            })
+            .catch(error => {
+                console.error(error.message);
+            });
+    });
+}
+
+async function installNvmForLinux() {
+
+    const installScript = 'https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh';
+
+    const commandCurl = `curl -o- ${installScript} | bash`;
+    const commandWget = `wget -qO- ${installScript} | bash`;
+
+    try {
+
+        await execAsync('which curl');
+        await execAsync(commandCurl);
+
+    } catch (error) {
+
+        try {
+
+            await execAsync(commandWget);
+
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
 
 }
 

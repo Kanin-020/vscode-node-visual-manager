@@ -125,6 +125,10 @@ body {
     display: flex !important;
 }
 
+.hide{
+    display: none;
+}
+
 .current {
     display: none;
     color: var(--vscode-gitDecoration-untrackedResourceForeground);
@@ -164,6 +168,10 @@ body {
 
 .footer-item:hover {
     background: var(--vscode-toolbar-hoverBackground);
+}
+
+.footer-text{
+    font-weight: 900;
 }
 
 .heart {
