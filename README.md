@@ -60,6 +60,10 @@ Visual correction after install.
 
 ### 1.0.5
 
+Minor fix auto installation.
+
+### 1.0.6
+
 Linux Bash Support.
 
 ---
