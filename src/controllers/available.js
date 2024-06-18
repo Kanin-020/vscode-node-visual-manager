@@ -103,8 +103,8 @@ function createNodeItem(item) {
         const nodeItem = document.createElement('div');
         nodeItem.classList.add('node-item');
 
-        let id = item.version.replace(/\./g, '_');
-
+        let id = (item.version || '').replace(/\./g, '_');
+        
         id = 'v' + id;
 
         nodeItem.setAttribute('id', id);
@@ -131,6 +131,9 @@ function createNodeItem(item) {
                 break;
             case 'Old Unstable':
                 tag.classList.add('old-unstable');
+                break;
+            case 'Common':
+                tag.classList.add('remote');
                 break;
 
             default:

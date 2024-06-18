@@ -4,6 +4,8 @@ var enableState;
 
 verifyNvmIsInstalled();
 
+getCurrentOS();
+
 getCurrentNodeVersion();
 
 getNodeVersionList();
@@ -25,6 +27,18 @@ window.addEventListener('message', async (event) => {
 
         switch (message.type) {
 
+            case 'receive-os':
+
+            const os = message.data;
+
+            if(os === "linux" || os === "darwin"){
+                
+                enableButton.classList.add('hide');
+
+            }
+
+                break;
+                
             case 'receive-list':
 
                 const versionList = message.data;
@@ -176,6 +190,14 @@ async function getCurrentNodeVersion() {
 
 }
 
+async function getCurrentOS() {
+    
+    clientVsCode.postMessage({
+        type: 'send-os'
+    });
+    
+}
+
 async function useNodeVersion(id) {
 
     clientVsCode.postMessage({
@@ -222,7 +244,9 @@ function createNodeItem(item) {
 
         let id = item.replace(/\./g, '_');
 
-        id = 'v' + id;
+        if(id !== 'system'){
+            id = 'v' + id;
+        }
 
 
         nodeItem.setAttribute('id', id);
@@ -285,36 +309,41 @@ function changeCurrentStateFromList(id) {
 
         const item = itemList.querySelector('#' + castedId);
 
-        const tag = item.querySelector('.tag');
-
-        tag.classList.add('show');
-
-        const idList = [];
-
-        const itemChildrenList = itemList.children;
-
-        for (let i = 0; i < itemChildrenList.length; i++) {
-
-            if (itemChildrenList[i].id.includes('v')) {
-                idList.push(itemChildrenList[i].id);
+        if(item){
+            
+            const tag = item.querySelector('.tag');
+    
+            tag.classList.add('show');
+    
+            const idList = [];
+    
+            const itemChildrenList = itemList.children;
+    
+            for (let i = 0; i < itemChildrenList.length; i++) {
+    
+                if (itemChildrenList[i].id.includes('v') || itemChildrenList[i].id.includes('system')) {
+                    idList.push(itemChildrenList[i].id);
+                }
+    
+            }
+    
+            for (let i = 0; i < idList.length; i++) {
+    
+                castedId = castedId.trim();
+    
+                idList[i] = idList[i].trim();
+    
+                if (castedId !== idList[i]) {
+    
+                    const element = itemList.querySelector('#' + idList[i]);
+                    const tag = element.querySelector('.tag');
+                    tag.classList.remove('show');
+    
+                }
             }
 
         }
 
-        for (let i = 0; i < idList.length; i++) {
-
-            castedId = castedId.trim();
-
-            idList[i] = idList[i].trim();
-
-            if (castedId !== idList[i]) {
-
-                const element = itemList.querySelector('#' + idList[i]);
-                const tag = element.querySelector('.tag');
-                tag.classList.remove('show');
-
-            }
-        }
 
     } catch (error) {
         console.error(error);
@@ -328,7 +357,9 @@ function deleteItemFromList(id) {
 
         let castedId = id.replace(/\./g, '_');
 
-        castedId = 'v' + castedId;
+        if(castedId !== 'system'){
+            castedId = 'v' + castedId;
+        }
 
         const deletedItem = document.getElementById(castedId);
 

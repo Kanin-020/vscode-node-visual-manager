@@ -1,43 +1,78 @@
+import path, { join } from 'path';
+
 import { exec } from 'child_process';
+import fs from 'fs';
 import os from 'node:os';
 import { promisify } from 'util';
+import { tmpdir } from 'os';
 
 const execAsync = promisify(exec);
+
+const access = promisify(fs.access);
 
 const nvm = {
     verifyUserSystem,
     verifyNvmIsInstalled,
-    getNodeVersionList,
-    getNodeVersionAvailableList,
-    getCurrentNodeVersion,
-    installNodeVersion,
-    uninstallNodeVersion,
-    useNodeVersion,
-    enableNVM,
-    disableNVM,
+    installNvmForWindows,
+    installNvmForLinux,
 };
 
 async function verifyUserSystem() {
 
-    const operativeSystem = os.platform();
+    try {
 
-    return { operativeSystem: operativeSystem };
+        const operativeSystem = os.platform();
+
+        return { operativeSystem: operativeSystem };
+
+    } catch {
+        return { operativeSystem: 'win32' };
+    }
+
 }
 
 async function verifyNvmIsInstalled() {
 
     try {
 
-        const { stdout, stderr } = await execAsync('nvm --version');
+        const systemResponse = await verifyUserSystem();
 
-        verifyUserSystem();
+        switch (systemResponse.operativeSystem) {
+            case 'win32':
 
-        if (stderr) {
-            return false;
-        }
+                const { stdout, stderr } = await execAsync('nvm --version');
 
-        if (stdout) {
-            return true;
+                if (stderr) {
+                    return false;
+                }
+
+                if (stdout) {
+                    return true;
+                }
+
+                break;
+
+            case 'darwin':
+            case 'linux':
+
+                if (process.env.HOME) {
+
+                    const nvmDir = process.env.NVM_DIR || path.join(process.env.HOME, '.nvm');
+
+                    try {
+                        await access(nvmDir);
+                        return true;
+                    } catch (err) {
+                        return false;
+                    }
+
+                }
+
+                break;
+
+
+            default:
+                return false;
         }
 
     } catch (error) {
@@ -46,236 +81,61 @@ async function verifyNvmIsInstalled() {
 
 }
 
-async function getNodeVersionList() {
+async function installNvmForWindows() {
+    import('node-fetch').then(({ default: fetch }) => {
 
-    try {
+        const url = 'https://github.com/coreybutler/nvm-windows/releases/download/1.1.11/nvm-setup.exe';
 
-        const { stdout, stderr } = await execAsync('nvm list');
+        const tempFilePath = join(tmpdir(), 'nvm-setup.exe');
 
-        if (stderr) {
-            throw new Error(stderr);
-        }
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(response.statusText);
+                }
+                return response.buffer();
+            })
+            .then(buffer => {
 
-        const versionRegex = /\b\d+\.\d+\.\d+\b/g;
+                require('fs').writeFileSync(tempFilePath, buffer);
 
-        const versionList = stdout.match(versionRegex);
+                exec(tempFilePath, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error(error.message);
+                        return;
+                    }
 
-        return { nodeList: versionList };
-
-    } catch (error) {
-        console.error(error);
-        return { error };
-    }
-
-}
-
-async function getNodeVersionAvailableList() {
-
-    try {
-
-        const { stdout, stderr } = await execAsync('nvm list available');
-
-        if (stderr) {
-            throw new Error(stderr);
-        }
-
-        const lines = stdout.split('\n');
-
-        const filteredLines: any = [];
-
-        const availableVersionList: any = [];
-
-        lines.forEach(line => {
-            if (line.includes('|') && !line.includes('-') && !line.includes('CURRENT') && !line.includes('LTS') && !line.includes('OLD STABLE') && !line.includes('OLD UNSTABLE')) {
-                filteredLines.push(line);
-            }
-        });
-
-        filteredLines.forEach((line: any) => {
-
-            const cleanLine = line.replace(/^\s*\|\s*|\s*\|\s*$/g, '');
-
-            const versions = cleanLine.split("|").map((version: any) => {
-                return version.trim();
+                });
+            })
+            .catch(error => {
+                console.error(error.message);
             });
-
-            const current = { version: versions[0], type: 'Current' };
-            const lts = { version: versions[1], type: 'LTS' };
-            const stable = { version: versions[2], type: 'Old Stable' };
-            const unstable = { version: versions[3], type: 'Old Unstable' };
-
-            availableVersionList.push(current);
-            availableVersionList.push(lts);
-            availableVersionList.push(stable);
-            availableVersionList.push(unstable);
-
-        });
-
-        const currentVersions: any = [];
-
-        const ltsVersions: any = [];
-
-        const oldStableVersions: any = [];
-
-        const oldUnstableVersions: any = [];
-
-        availableVersionList.forEach((version: any) => {
-
-            switch (version.type) {
-                case 'Current':
-                    currentVersions.push(version);
-                    break;
-                case 'LTS':
-                    ltsVersions.push(version);
-                    break;
-                case 'Old Stable':
-                    oldStableVersions.push(version);
-                    break;
-                case 'Old Unstable':
-                    oldUnstableVersions.push(version);
-                    break;
-
-                default:
-                    break;
-            }
-
-
-        });
-
-        const sortedVersionList = [...currentVersions, ...ltsVersions, ...oldStableVersions, ...oldUnstableVersions];
-
-        return { nodeRemoteList: sortedVersionList };
-
-    } catch (error) {
-        console.error(error);
-        return { error };
-    }
-
+    });
 }
 
-async function getCurrentNodeVersion() {
+async function installNvmForLinux() {
+
+    const installScript = 'https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh';
+
+    const commandCurl = `curl -o- ${installScript} | bash`;
+    const commandWget = `wget -qO- ${installScript} | bash`;
 
     try {
 
-        const { stdout, stderr } = await execAsync('nvm current');
-
-        if (stderr) {
-            throw new Error(stderr);
-        }
-
-        return { currentNodeVersion: stdout };
+        await execAsync('which curl');
+        await execAsync(commandCurl);
 
     } catch (error) {
-        console.error(error);
-        return { error };
-    }
 
-}
+        try {
 
-async function installNodeVersion(version: string) {
+            await execAsync(commandWget);
 
-    try {
-
-        const { stdout, stderr } = await execAsync('nvm install ' + version);
-
-        if (stderr) {
-            throw new Error(stderr);
+        } catch (err) {
+            console.error(err);
         }
-
-        let lines = stdout.split('\n');
-
-        lines.shift();
-        lines.shift();
-
-        let index = lines.findIndex(linea => linea.startsWith('Installation complete.'));
-
-        lines.splice(index);
-
-        let message = lines.join('\n');
-
-        return { message: message, id: version };
-
-    } catch (error) {
-        console.error(error);
-        return { error };
     }
 
-}
-
-async function uninstallNodeVersion(version: string) {
-
-    try {
-
-        const { stdout, stderr } = await execAsync('nvm uninstall ' + version);
-
-        if (stderr) {
-            throw new Error(stderr);
-        }
-
-        return { message: stdout, id: version };
-
-    } catch (error) {
-        console.error(error);
-        return { error };
-    }
-
-}
-
-async function useNodeVersion(version: string) {
-
-    try {
-
-        const { stdout, stderr } = await execAsync('nvm use ' + version);
-
-        if (stderr) {
-            throw new Error(stderr);
-        }
-
-        return { message: stdout, id: version };
-
-    } catch (error) {
-        console.error(error);
-        return { error };
-    }
-
-}
-
-
-async function enableNVM() {
-
-    try {
-
-        const { stdout, stderr } = await execAsync('nvm on');
-
-        if (stderr) {
-            throw new Error(stderr);
-        }
-
-        return { message: stdout };
-
-    } catch (error) {
-        console.error(error);
-        return { error };
-    }
-
-}
-
-async function disableNVM() {
-
-    try {
-
-        const { stdout, stderr } = await execAsync('nvm off');
-
-        if (stderr) {
-            throw new Error(stderr);
-        }
-
-        return { message: stdout };
-
-    } catch (error) {
-        console.error(error);
-        return { error };
-    }
 
 }
 

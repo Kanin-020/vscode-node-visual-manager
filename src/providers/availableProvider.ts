@@ -3,6 +3,8 @@ import * as vscode from 'vscode';
 import fs from 'fs';
 import { getNonce } from './getNonce';
 import nvm from '../model/nvm';
+import nvmLinux from '../model/nvmLinux';
+import nvmWindows from '../model/nvmWindows';
 
 export class AvailableProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
@@ -108,7 +110,28 @@ async function getRemoteList(webviewView: vscode.WebviewView) {
 
     try {
 
-        const response = await nvm.getNodeVersionAvailableList();
+        const systemResponse = await nvm.verifyUserSystem();
+
+        let response;
+
+        switch (systemResponse.operativeSystem) {
+            case 'win32':
+                response = await nvmWindows.getNodeVersionAvailableList();
+                break;
+
+            case 'linux':
+                response = await nvmLinux.getNodeVersionAvailableList();
+                break;
+
+            case 'darwin':
+                response = await nvmLinux.getNodeVersionAvailableList();
+                break;
+
+
+            default:
+                vscode.window.showErrorMessage('Operative system not supported yet.');
+                throw Error;
+        }
 
         if (response.error) {
             vscode.window.showErrorMessage('Could not get available node version list. Verify your internet connection.');
@@ -133,7 +156,28 @@ async function installVersion(version: string, webviewView: vscode.WebviewView) 
 
         vscode.window.showInformationMessage('Installing node version: ' + version);
 
-        const response = await nvm.installNodeVersion(version);
+        const systemResponse = await nvm.verifyUserSystem();
+
+        let response;
+
+        switch (systemResponse.operativeSystem) {
+            case 'win32':
+                response = await nvmWindows.installNodeVersion(version);
+                break;
+
+            case 'linux':
+                response = await nvmLinux.installNodeVersion(version);
+                break;
+
+            case 'darwin':
+                response = await nvmLinux.installNodeVersion(version);
+                break;
+
+
+            default:
+                vscode.window.showErrorMessage('Operative system not supported yet.');
+                throw Error;
+        }
 
         if (response.error) {
             vscode.window.showErrorMessage('Could not install the requested version.');
@@ -143,6 +187,9 @@ async function installVersion(version: string, webviewView: vscode.WebviewView) 
             vscode.window.showInformationMessage(response.message);
             vscode.window.showInformationMessage(`Complete node v${version} installed successfully.`);
             webviewView.webview.postMessage({ type: 'receive-install', data: response.id });
+
+            await vscode.commands.executeCommand('workbench.action.webview.reloadWebviewAction');
+
         }
 
     } catch (error) {
