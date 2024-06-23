@@ -28,6 +28,8 @@ async function getNodeVersionList() {
 
         const versionList = stdout.match(versionRegex);
 
+        console.log(versionList);
+
         return { nodeList: versionList };
 
     } catch (error) {
@@ -127,11 +129,15 @@ async function getCurrentNodeVersion() {
 
         const { stdout, stderr } = await execAsync('nvm current');
 
+        let currentVersion = stdout.replace('v', '');
+
+        currentVersion = currentVersion.trim();
+
         if (stderr) {
             throw new Error(stderr);
         }
 
-        return { currentNodeVersion: stdout };
+        return { currentNodeVersion: currentVersion };
 
     } catch (error) {
         console.error(error);
