@@ -6,12 +6,12 @@ import AvailableComponent from '../components/availableComponent/availableCompon
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
-const App = () => (
+const AvailableApp = () => (
   <div>
     <AvailableComponent />
   </div>
 );
 
-const container = document.getElementById('root');
-const root = createRoot(container);
-root.render(<App />); 
+const availableContainer = document.getElementById('available-root');
+const availableRoot = createRoot(availableContainer);
+availableRoot.render(<AvailableApp />); 

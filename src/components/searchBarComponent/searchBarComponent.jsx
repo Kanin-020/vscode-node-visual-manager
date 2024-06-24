@@ -1,6 +1,8 @@
+import './searchBar.css';
+
 import React, { useState } from 'react';
 
-const SearchBar = ({ setFilteredVersions, allVersions }) => {
+const SearchBar = ({ setFilteredVersions, allVersions, type }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleSearch = (event) => {
@@ -9,8 +11,18 @@ const SearchBar = ({ setFilteredVersions, allVersions }) => {
         if (value === '') {
             setFilteredVersions(allVersions);
         } else {
-            const filtered = allVersions.filter(version => version.toLowerCase().includes(value));
-            setFilteredVersions(filtered);
+
+            if (type === 'array') {
+                const filtered = allVersions.filter(version => version.toLowerCase().includes(value));
+
+                setFilteredVersions(filtered);
+            }
+
+            if (type === 'object') {
+                const filtered = allVersions.filter(item => item.version.toLowerCase().includes(value) || item.type.toLowerCase().includes(value));
+
+                setFilteredVersions(filtered);
+            }
         }
     };
 
@@ -23,6 +35,7 @@ const SearchBar = ({ setFilteredVersions, allVersions }) => {
                 placeholder="Find node version"
                 value={searchTerm}
                 onChange={handleSearch}
+                maxLength={25}
             />
             <i className="codicon codicon-search"></i>
         </div>

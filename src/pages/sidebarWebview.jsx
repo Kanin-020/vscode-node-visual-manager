@@ -6,12 +6,12 @@ import React from 'react';
 import SidebarComponent from '../components/sidebarComponent/sidebarComponent';
 import { createRoot } from 'react-dom/client';
 
-const App = () => (
+const SidebarApp = () => (
   <div>
     <SidebarComponent />
   </div>
 );
 
-const container = document.getElementById('root');
-const root = createRoot(container);
-root.render(<App />); 
+const sidebarContainer = document.getElementById('sidebar-root');
+const sidebarRoot = createRoot(sidebarContainer);
+sidebarRoot.render(<SidebarApp />); 

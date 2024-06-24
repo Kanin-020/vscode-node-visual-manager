@@ -2,9 +2,12 @@ body {
     background: var(--vscode-sideBar-background) !important;
 }
 
+#item-list {
+    padding: 1rem 0rem 15% 0rem
+}
+
 .container {
-    width: 100%;
-    height: 100%;
+    height: 100vh;
 }
 
 .content {
@@ -68,27 +71,6 @@ body {
     text-transform: uppercase;
 }
 
-.search-container {
-    display: flex;
-    flex-direction: column;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 12px;
-    padding-right: 12px;
-    justify-content: center;
-}
-
-.search-bar {
-    appearance: none;
-    outline: none !important;
-    height: 24px;
-    border: 1px solid var(--vscode-input-border, transparent) !important;
-    font-size: inherit !important;
-    font-family: inherit !important;
-    color: inherit !important;
-    padding: 3px 0 3px 6px !important;
-}
-
 .options {
     display: none;
     gap: 5px;
@@ -125,7 +107,7 @@ body {
     display: flex !important;
 }
 
-.hide{
+.hide {
     display: none;
 }
 
@@ -170,7 +152,7 @@ body {
     background: var(--vscode-toolbar-hoverBackground);
 }
 
-.footer-text{
+.footer-text {
     font-weight: 900;
 }
 

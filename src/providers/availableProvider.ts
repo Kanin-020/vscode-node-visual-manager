@@ -23,12 +23,20 @@ export class AvailableProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
-                case 'send-list-available':
+                case 'send-list-available': {
+
                     getRemoteList(webviewView);
+
                     break;
-                case 'send-install':
+
+                }
+                case 'send-install': {
+
                     installVersion(data.data, webviewView);
+
                     break;
+                }
+
             }
         });
     }
@@ -38,28 +46,29 @@ export class AvailableProvider implements vscode.WebviewViewProvider {
     }
 
     private _getHtmlForWebview(webview: vscode.Webview): string {
-        
+
         const scriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview', 'available.bundle.js')
+            vscode.Uri.joinPath(this._extensionUri, "dist", "webview", "available.bundle.js")
         );
 
         const nonce = getNonce();
 
         return `<!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Available/title>
+        <html lang="en"
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Available</title>
 
-                <meta http-equiv="Content-Security-Policy" content="font-src ${webview.cspSource}; img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
-                
-            </head>
-            <body>
-                <div id="root"></div>
-                <script nonce="${nonce}" src="${scriptUri}"></script>
-            </body>
-            </html>`;
+            <!--<meta http-equiv="Content-Security-Policy" content="font-src ${webview.cspSource}; img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';"> -->
+
+        </head>
+        <body>
+            <div id="available-root"></div>
+            <script nonce="${nonce}" src="${scriptUri}"></script>
+        </body>
+        </html>`;
+
     }
 }
 

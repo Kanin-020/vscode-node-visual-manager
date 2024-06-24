@@ -9,7 +9,11 @@ const SidebarComponent = () => {
     const [filteredVersions, setFilteredVersions] = useState([]);
     const [os, setOs] = useState('');
     const [enableButtonVisible, setEnableButtonVisible] = useState(true);
+
     const [currentVersion, setCurrentVersion] = useState(null);
+
+    const [enableButtonState, setEnableButtonState] = useState(null);
+    const [nvmState, setNvmState] = useState(false);
 
     useEffect(() => {
         verifyNvmIsInstalled();
@@ -28,6 +32,8 @@ const SidebarComponent = () => {
 
                     if (message.data === "linux" || message.data === "darwin") {
                         setEnableButtonVisible(false);
+                    } else {
+                        setEnableButtonState(true);
                     }
 
                     break;
@@ -40,10 +46,18 @@ const SidebarComponent = () => {
 
                     setCurrentVersion(message.data);
 
+                    if (message.data.includes('No current version')) {
+                        setNvmState(false);
+                    } else {
+                        setNvmState(true);
+                    }
+
                     console.log(message.data);
 
+                    console.log(nvmState);
+
                     setFilteredVersions(prev => prev.map(version =>
-                        version === message.data ? { ...version, current: true } : version));
+                        version.name === message.data ? { ...version, current: true } : version));
 
                     break;
 
@@ -55,11 +69,28 @@ const SidebarComponent = () => {
                     setCurrentVersion(message.data);
 
                     break;
+
                 case 'receive-uninstall':
 
                     setNodeVersions(prev => prev.filter(version => version !== message.data));
 
                     break;
+
+                case 'receive-on':
+
+                    getCurrentNodeVersion();
+
+                    console.log("Receive on:", nvmState);
+
+                    break;
+
+                case 'receive-off':
+
+                    console.log("Receive off:", nvmState);
+                    getCurrentNodeVersion();
+
+                    break;
+
                 default:
                     break;
             }
@@ -76,17 +107,32 @@ const SidebarComponent = () => {
         setFilteredVersions(nodeVersions);
     }, [nodeVersions]);
 
+
+    const toggleNVMState = () => {
+
+        if (nvmState === true) {
+            disableNvm();
+        } else if (nvmState === false || nvmState === null) {
+            enableNvm();
+        }
+
+    };
+
     return (
         <div className="container">
-            <SearchBar setFilteredVersions={setFilteredVersions} allVersions={nodeVersions} />
+            <SearchBar setFilteredVersions={setFilteredVersions} allVersions={nodeVersions} type={"array"} />
             <div className="content">
                 <h2 className="title">NODE VERSIONS</h2>
                 <div id="item-list">
-                    {filteredVersions.map((version) => (
-                        <div className="node-item" key={version}>
+                    {filteredVersions.map((version, index) => (
+                        <div className="node-item" key={index}>
                             <div className="node-item-content">
                                 <span className="version">{version}</span>
-                                <span className="tag current show" style={{ visibility: version === currentVersion ? 'visible' : 'hidden' }}>current</span>
+                                <span
+                                    className="tag current show"
+                                    style={{ visibility: version === currentVersion ? 'visible' : 'hidden' }}
+                                    onClick={toggleNVMState}
+                                >Current</span>
                                 <div className="options">
                                     <a className="action" onClick={() => useNodeVersion(version)}>
                                         <i className="codicon codicon-run"></i>
@@ -100,12 +146,12 @@ const SidebarComponent = () => {
                     ))}
                 </div>
             </div>
-            <div className="footer" id="footer" style={{ visibility: enableButtonVisible ? 'visible' : 'hidden' }}>
-                <div className="footer-item" id="enable-button">
+            <div className="footer" id="footer">
+                <div className="footer-item" id="enable-button" style={{ visibility: enableButtonVisible === true ? 'visible' : 'hidden' }} onClick={toggleNVMState}>
                     <div className="footer-item-content">
-                        <i className="codicon footer-icon"></i>
+                        <i className={`codicon footer-icon ${nvmState ? 'codicon-sync on' : 'codicon-sync-ignored off'}`}></i>
                     </div>
-                    <span className="footer-text"></span>
+                    <span className="footer-text">{nvmState ? 'ON' : 'OFF'}</span>
                 </div>
                 <a className="heart" href="https://jesus-alvarez-portfolio.web.app/">
                     <div className="footer-item">
@@ -141,6 +187,14 @@ async function useNodeVersion(version) {
 
 async function uninstallNodeVersion(version) {
     vscode.postMessage({ type: 'send-uninstall', data: version });
+}
+
+async function enableNvm() {
+    vscode.postMessage({ type: 'send-on' });
+}
+
+async function disableNvm() {
+    vscode.postMessage({ type: 'send-off' });
 }
 
 export default SidebarComponent;

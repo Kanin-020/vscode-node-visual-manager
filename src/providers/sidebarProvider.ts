@@ -103,11 +103,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
             </head>
             <body>
-                <div id="root"></div>
+                <div id="sidebar-root"></div>
                 <script nonce="${nonce}" src="${scriptUri}"></script>
             </body>
             </html>`;
-
 
     }
 
