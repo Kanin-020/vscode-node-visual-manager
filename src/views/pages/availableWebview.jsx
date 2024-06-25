@@ -1,5 +1,5 @@
-import '../styles/global.css';
-import '../styles/codicon.css';
+import '../../styles/global.css';
+import '../../styles/codicon.css';
 
 import AvailableBar from '../components/AvailableBar/AvailableBar';
 import React from 'react';

@@ -1,5 +1,5 @@
-import '../styles/global.css';
-import '../styles/codicon.css';
+import '../../styles/global.css';
+import '../../styles/codicon.css';
 
 import React from 'react';
 import SideBar from '../components/SideBar/SideBar';

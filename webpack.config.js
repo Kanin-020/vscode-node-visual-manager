@@ -40,8 +40,8 @@ const webviewConfig = {
   target: 'web',
   mode: 'none',
   entry: {
-    available: './src/pages/availableWebview.jsx',
-    sidebar: './src/pages/sidebarWebview.jsx'
+    available: './src/views/pages/availableWebview.jsx',
+    sidebar: './src/views/pages/sidebarWebview.jsx'
   },
   output: {
     path: path.resolve(__dirname, 'dist', 'webview'),
