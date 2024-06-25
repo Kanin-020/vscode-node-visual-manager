@@ -12,7 +12,7 @@ const SideBar = () => {
 
   const [currentVersionState, setCurrentVersionState] = useState(null);
 
-  const [enableButtonVisible, setEnableButtonVisible] = useState(true);
+  const [enableButtonVisible, setEnableButtonVisible] = useState(false);
   const [enableButtonState, setEnableButtonState] = useState(false);
 
   useEffect(() => {
