@@ -120,7 +120,7 @@ const SideBar = () => {
               <div className="node-item-content">
                 <span className="version">{version}</span>
                 <span
-                  className="tag current show"
+                  className="tag current"
                   style={{ visibility: version === currentVersionState ? 'visible' : 'hidden' }}
                   onClick={toggleNVMState}
                 >Current</span>

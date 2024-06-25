@@ -73,7 +73,7 @@ async function installNodeVersion(version) {
 const getTagClass = (type) => {
   switch (type) {
     case 'Current':
-      return 'remote';
+      return 'current';
     case 'LTS':
       return 'lts';
     case 'Old Stable':
@@ -81,7 +81,7 @@ const getTagClass = (type) => {
     case 'Old Unstable':
       return 'old-unstable';
     case 'Common':
-      return 'remote';
+      return 'current';
     default:
       return '';
   }

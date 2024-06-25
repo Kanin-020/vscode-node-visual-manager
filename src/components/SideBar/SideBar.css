@@ -18,6 +18,55 @@ body {
     height: 100%;
 }
 
+.title {
+    margin-bottom: 0.25rem;
+    padding: 1rem 0.75rem 0;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.options {
+    display: none;
+    gap: 5px;
+    position: absolute;
+    right: 0;
+}
+
+.node-item {
+    position: relative;
+    margin: 1px;
+    padding: 0 0.75rem;
+    line-height: 18px;
+}
+
+.node-item-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    gap: 16px;
+    padding: 0px 10px;
+}
+
+.version {
+    display: block;
+    flex-grow: 1;
+    overflow: hidden;
+    padding: 5px 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.current {
+    display: none;
+    color: var(--vscode-gitDecoration-untrackedResourceForeground);
+}
+
+.tag{
+    display: flex;
+}
+
 .footer {
     padding: 0 7px;
     display: flex;
@@ -63,75 +112,6 @@ body {
     color: var(--vscode-charts-red);
 }
 
-.title {
-    margin-bottom: 0.25rem;
-    padding: 1rem 0.75rem 0;
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-}
-
-.options {
-    display: none;
-    gap: 5px;
-    position: absolute;
-    right: 0;
-}
-
-.node-item {
-    position: relative;
-    margin: 1px;
-    padding: 0 0.75rem;
-    line-height: 18px;
-}
-
-.node-item-content {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    position: relative;
-    gap: 16px;
-    padding: 0px 10px;
-}
-
-.version {
-    display: block;
-    flex-grow: 1;
-    overflow: hidden;
-    padding: 5px 0;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.show {
-    display: flex !important;
-}
-
-.hide {
-    display: none;
-}
-
-.current {
-    display: none;
-    color: var(--vscode-gitDecoration-untrackedResourceForeground);
-}
-
-.remote {
-    color: var(--vscode-list-highlightForeground);
-}
-
-.lts {
-    color: var(--vscode-inputValidation-infoBorder);
-}
-
-.old-stable {
-    color: var(--vscode-inputValidation-warningBorder);
-}
-
-.old-unstable {
-    color: var(--vscode-inputValidation-errorBorder);
-}
-
 .node-item:hover {
     background-color: var(--vscode-list-hoverBackground);
 
@@ -143,9 +123,6 @@ body {
         display: none;
     }
 
-    .show {
-        display: none !important;
-    }
 }
 
 .footer-item:hover {
