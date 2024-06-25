@@ -128,7 +128,7 @@ async function getCurrentNodeVersion() {
         const { stdout, stderr } = await execAsync('nvm current');
 
         if (stdout.includes('No current version')) {
-            return { currentVersion: stdout };
+            return { currentNodeVersion: stdout };
         }
 
         let currentVersion = stdout.replace('v', '');

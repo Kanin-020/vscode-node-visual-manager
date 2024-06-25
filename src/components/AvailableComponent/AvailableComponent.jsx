@@ -13,7 +13,9 @@ const AvailableComponent = () => {
     getNodeVersionAvailableList();
 
     const handleMessage = (event) => {
+
       const message = event.data;
+
       if (message.type === 'receive-list-available') {
 
         setNodeVersions(message.data);
