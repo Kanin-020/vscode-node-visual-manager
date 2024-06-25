@@ -1,10 +1,12 @@
+import './Available.css';
+
 import React, { useEffect, useState } from 'react';
 
-import SearchBar from '../searchBarComponent/searchBarComponent';
+import SearchBar from '../SearchBar/SearchBar';
 
 const vscode = acquireVsCodeApi();
 
-const AvailableComponent = () => {
+const Available = () => {
   const [nodeVersions, setNodeVersions] = useState([]);
   const [filteredVersions, setFilteredVersions] = useState([]);
 
@@ -85,4 +87,4 @@ const getTagClass = (type) => {
   }
 };
 
-export default AvailableComponent;
+export default Available;

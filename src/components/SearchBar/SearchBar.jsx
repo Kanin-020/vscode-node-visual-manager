@@ -1,4 +1,4 @@
-import './searchBar.css';
+import './SearchBar.css';
 
 import React, { useState } from 'react';
 

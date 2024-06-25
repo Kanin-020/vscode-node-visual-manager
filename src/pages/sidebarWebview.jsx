@@ -1,14 +1,13 @@
-import '../components/sidebarComponent/sidebar.css';
 import '../styles/global.css';
 import '../styles/codicon.css';
 
 import React from 'react';
-import SidebarComponent from '../components/sidebarComponent/sidebarComponent';
+import SideBar from '../components/Sidebar/Sidebar';
 import { createRoot } from 'react-dom/client';
 
 const SidebarApp = () => (
   <div>
-    <SidebarComponent />
+    <Sidebar/>
   </div>
 );
 
