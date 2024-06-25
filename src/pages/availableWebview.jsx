@@ -1,13 +1,13 @@
 import '../styles/global.css';
 import '../styles/codicon.css';
 
-import Available from '../components/Available/Available';
+import AvailableBar from '../components/AvailableBar/AvailableBar';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 const AvailableApp = () => (
   <div>
-    <Available/>
+    <AvailableBar/>
   </div>
 );
 

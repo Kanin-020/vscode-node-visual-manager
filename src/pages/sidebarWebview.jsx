@@ -2,12 +2,12 @@ import '../styles/global.css';
 import '../styles/codicon.css';
 
 import React from 'react';
-import SideBar from '../components/Sidebar/Sidebar';
+import SideBar from '../components/SideBar/SideBar';
 import { createRoot } from 'react-dom/client';
 
 const SidebarApp = () => (
   <div>
-    <Sidebar/>
+    <SideBar/>
   </div>
 );
 

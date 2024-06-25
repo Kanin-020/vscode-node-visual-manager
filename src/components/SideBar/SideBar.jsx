@@ -1,4 +1,4 @@
-import './Sidebar.css';
+import './SideBar.css';
 
 import React, { useEffect, useState } from 'react';
 
@@ -6,7 +6,7 @@ import SearchBar from '../SearchBar/SearchBar';
 
 const vscode = acquireVsCodeApi();
 
-const Sidebar = () => {
+const SideBar = () => {
   const [nodeVersions, setNodeVersions] = useState([]);
   const [filteredVersions, setFilteredVersions] = useState([]);
 
@@ -188,4 +188,4 @@ async function disableNvm() {
   vscode.postMessage({ type: 'send-off' });
 }
 
-export default Sidebar;
+export default SideBar;
