@@ -8,11 +8,9 @@ import { createRoot } from 'react-dom/client';
 const AvailableBar = React.lazy(() => import('../components/AvailableBar/AvailableBar.jsx'));
 
 const AvailableApp = () => (
-  <div>
-    <Suspense fallback={<div>Loading...</div>}>
-      <AvailableBar/>
-    </Suspense>
-  </div>
+  <Suspense fallback={<div>Loading...</div>}>
+    <AvailableBar />
+  </Suspense>
 );
 
 const availableContainer = document.getElementById('available-root');

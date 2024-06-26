@@ -107,7 +107,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>SideBar</title>
 
-                <meta http-equiv="${cspPolicy}">
+                <meta http-equiv="Content-Security-Policy" content="${cspPolicy}">
             
             </head>
             <body>
@@ -139,7 +139,7 @@ async function isInstalled(data: any) {
                     await nvm.installNvmForWindows();
                     break;
 
-                case 'linux': await
+                case 'linux': 
                     await nvm.installNvmForLinux();
                     break;
 

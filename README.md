@@ -66,6 +66,10 @@ Minor fix auto installation.
 
 Linux Bash Support.
 
+### 1.1.0
+
+Bug fixes, big stability and performance improvements.
+
 ---
 
 ## Issues Repository

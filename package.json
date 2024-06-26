@@ -1,7 +1,7 @@
 {
   "name": "node-visual-manager",
   "displayName": "Node Visual Manager",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "publisher": "kanin-020",
   "description": "Node Version Manager adaptation for VSCode.",
   "author": {
