@@ -46,6 +46,10 @@ Bug fixes, big stability and performance improvements.
 
 Name display correction.
 
+### 1.1.2
+
+Auto installation issue in Linux fixed.
+
 ---
 
 ## Issues Repository
