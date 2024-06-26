@@ -16,7 +16,7 @@ export class AvailableProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.options = {
             enableScripts: true,
-            localResourceRoots: [vscode.Uri.joinPath(this._extensionUri, 'dist')],
+            localResourceRoots: [vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview')],
         };
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
@@ -53,6 +53,14 @@ export class AvailableProvider implements vscode.WebviewViewProvider {
 
         const nonce = getNonce();
 
+        const cspPolicy = `
+            default-src 'none';
+            font-src ${webview.cspSource};
+            img-src ${webview.cspSource} https: data:;
+            style-src ${webview.cspSource} 'unsafe-inline';
+            script-src ${webview.cspSource} 'nonce-${nonce}';
+        `;
+
         return `<!DOCTYPE html>
         <html lang="en"
         <head>
@@ -60,8 +68,8 @@ export class AvailableProvider implements vscode.WebviewViewProvider {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Available</title>
 
-            <meta http-equiv="Content-Security-Policy" content="font-src ${webview.cspSource}; img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
-
+            <meta http-equiv="Content-Security-Policy" content="${cspPolicy}">
+        
         </head>
         <body>
             <div id="available-root"></div>

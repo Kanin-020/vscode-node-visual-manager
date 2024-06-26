@@ -1,10 +1,11 @@
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 const extensionConfig = {
   target: 'node',
-  mode: 'none',
+  mode: 'production',
   entry: './src/extension.ts',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -30,15 +31,16 @@ const extensionConfig = {
       }
     ]
   },
-  devtool: 'nosources-source-map',
-  infrastructureLogging: {
-    level: "log",
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin()],
   },
+  devtool: 'nosources-source-map',
 };
 
 const webviewConfig = {
   target: 'web',
-  mode: 'none',
+  mode: 'production', 
   entry: {
     available: './src/views/pages/availableWebview.jsx',
     sidebar: './src/views/pages/sidebarWebview.jsx'
@@ -56,7 +58,7 @@ const webviewConfig = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', '@babel/preset-react']
+            presets: ['@babel/preset-env', '@babel/preset-react'],
           }
         }
       },
@@ -69,13 +71,13 @@ const webviewConfig = {
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.css'],
     fallback: {
-      process: require.resolve('process/browser'), 
-      window: require.resolve('window-or-global'), 
+      process: require.resolve('process/browser'),
+      window: require.resolve('window-or-global'),
     }
   },
   plugins: [
     new webpack.ProvidePlugin({
-      process: 'process/browser', 
+      process: 'process/browser',
       window: 'window-or-global',
     }),
     new CopyWebpackPlugin({
@@ -84,6 +86,10 @@ const webviewConfig = {
       ]
     })
   ],
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin()],
+  },
   devtool: 'source-map'
 };
 

@@ -2,12 +2,15 @@ import '../../styles/global.css';
 import '../../styles/codicon.css';
 
 import React from 'react';
-import SideBar from '../components/SideBar/SideBar';
 import { createRoot } from 'react-dom/client';
+
+const SideBar = React.lazy(() => import('../components/SideBar/SideBar.jsx'));
 
 const SidebarApp = () => (
   <div>
-    <SideBar/>
+    <Suspense fallback={<div>Loading...</div>}>
+      <SideBar/>
+    </Suspense>
   </div>
 );
 
