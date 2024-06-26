@@ -38,37 +38,13 @@ Working on MacOS version.
 
 ## Release Notes
 
-### 1.0.0
-
-Initial release of Node Visual Manager.
-
-### 1.0.1
-
-Correction in installing node version message.
-
-### 1.0.2
-
-Auto installation of NVM for Windows.
-
-### 1.0.3
-
-Auto installation error corrected.
-
-### 1.0.4
-
-Visual correction after install.
-
-### 1.0.5
-
-Minor fix auto installation.
-
-### 1.0.6
-
-Linux Bash Support.
-
 ### 1.1.0
 
 Bug fixes, big stability and performance improvements.
+
+### 1.1.1
+
+Name display correction.
 
 ---
 
