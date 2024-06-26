@@ -132,19 +132,19 @@ async function isInstalled(data: any) {
 
         if (response === false) {
 
-            await vscode.window.showInformationMessage('Wait for installation ...');
+            vscode.window.showInformationMessage('Wait for installation ...');
 
             switch (systemResponse.operativeSystem) {
                 case 'win32':
                     await nvm.installNvmForWindows();
                     break;
 
-                case 'linux': 
+                case 'linux':
                     await nvm.installNvmForLinux();
                     break;
 
                 case 'darwin':
-                    await nvm.installNvmForLinux();
+                    vscode.window.showErrorMessage('Operative system not supported yet.');
                     break;
 
                 default:

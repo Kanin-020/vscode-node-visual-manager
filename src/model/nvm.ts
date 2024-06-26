@@ -114,15 +114,17 @@ async function installNvmForWindows() {
 }
 
 async function installNvmForLinux() {
-
+    
     const installScript = 'https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh';
 
     const commandCurl = `curl -o- ${installScript} | bash`;
     const commandWget = `wget -qO- ${installScript} | bash`;
+    
+    const sourceNvmScript = 'source ~/.nvm/nvm.sh';
 
     try {
-
         await execAsync('which curl');
+
         await execAsync(commandCurl);
 
     } catch (error) {
@@ -132,11 +134,20 @@ async function installNvmForLinux() {
             await execAsync(commandWget);
 
         } catch (err) {
+
             console.error(err);
+
+            return;
         }
     }
 
+    try {
+        
+        await execAsync(sourceNvmScript);
 
+    } catch (err) {
+        console.error('Failed to load nvm:', err);
+    }
 }
 
 export default nvm;
