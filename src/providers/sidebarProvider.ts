@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 
-import fs from 'fs';
 import { getNonce } from './getNonce';
 import nvm from '../model/nvm';
 import nvmLinux from '../model/nvmLinux';
@@ -16,17 +15,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         this._view = webviewView;
 
         webviewView.webview.options = {
-            // Allow scripts in the webview
             enableScripts: true,
-
-            localResourceRoots: [this._extensionUri],
+            localResourceRoots: [vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview')],
         };
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
-
-
             switch (data.type) {
                 case "send-nvm": {
 
@@ -91,56 +86,35 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     private _getHtmlForWebview(webview: vscode.Webview): string {
 
-        const styleGlobalUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "dist", "styles/global.css")
-        );
-
-        const styleVSCodeUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "dist", "styles/vscode.css")
-        );
-
-        const styleSidebar = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "dist", "styles/sidebar.css")
-        );
-
-        const styleIconsUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "dist", "styles/codicon.css")
-        );
-
         const scriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "dist", "controllers/sidebar.js")
+            vscode.Uri.joinPath(this._extensionUri, "dist", "webview", "sidebar.bundle.js")
         );
-
-        const htmlFilePath = vscode.Uri.joinPath(this._extensionUri, "dist", "pages/sidebar.html").fsPath;
-        const htmlString = fs.readFileSync(htmlFilePath, 'utf-8');
 
         const nonce = getNonce();
+
+        const cspPolicy = `
+            default-src 'none';
+            font-src ${webview.cspSource};
+            img-src ${webview.cspSource} https: data:;
+            style-src ${webview.cspSource} 'unsafe-inline';
+            script-src ${webview.cspSource} 'nonce-${nonce}';
+        `;
 
         return `<!DOCTYPE html>
             <html lang="en"
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Cat Coding</title>
+                <title>SideBar</title>
 
-                <meta http-equiv="Content-Security-Policy" content="font-src ${webview.cspSource}; img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
-
-                <link href="${styleSidebar}" rel="stylesheet">
-                <link href="${styleVSCodeUri}" rel="stylesheet">
-                <link href="${styleIconsUri}" rel="stylesheet">
-                <link href="${styleGlobalUri}" rel="stylesheet">
-
-                <script nonce="${nonce}">
-                    const clientVsCode = acquireVsCodeApi();
-                </script>
-
+                <meta http-equiv="Content-Security-Policy" content="${cspPolicy}">
+            
             </head>
             <body>
-                ${htmlString}
-                <script nonce="${nonce}" src="${scriptUri}" ></script>
+                <div id="sidebar-root"></div>
+                <script nonce="${nonce}" src="${scriptUri}"></script>
             </body>
             </html>`;
-
 
     }
 
@@ -165,7 +139,7 @@ async function isInstalled(data: any) {
                     await nvm.installNvmForWindows();
                     break;
 
-                case 'linux':await
+                case 'linux': 
                     await nvm.installNvmForLinux();
                     break;
 

@@ -30,7 +30,9 @@ async function getNodeVersionList() {
 
         const versionList = filteredList.match(regex);
 
-        return { nodeList: versionList };
+        const sortedVersionList = sortVersionList(versionList);
+
+        return { nodeList: sortedVersionList };
 
     } catch (error) {
         console.error(error);
@@ -51,7 +53,7 @@ async function getNodeVersionAvailableList() {
 
         const lines = stdout.split('\n');
 
-        const commonVersions: any = [];
+        const currentVersions: any = [];
         const ltsVersions: any = [];
 
         const versionRegex = /(\d+\.\d+\.\d+)/g;
@@ -62,25 +64,28 @@ async function getNodeVersionAvailableList() {
 
             let element;
 
-            if (line.includes('LTS')) {
-                const version = line.match(versionRegex);
-                element = { version: version?.[0], type: 'LTS' };
+            if (line !== '') {
 
-            } else {
-                const version = line.match(versionRegex);
-                element = { version: version?.[0], type: 'Common' };
+                if (line.includes('LTS')) {
+                    const version = line.match(versionRegex);
+                    element = { version: version?.[0], type: 'LTS' };
 
+                } else {
+                    const version = line.match(versionRegex);
+                    element = { version: version?.[0], type: 'Current' };
+
+                }
+
+                availableVersionList.push(element);
             }
-
-            availableVersionList.push(element);
 
         });
 
         availableVersionList.forEach((version: any) => {
 
             switch (version.type) {
-                case 'Common':
-                    commonVersions.push(version);
+                case 'Current':
+                    currentVersions.push(version);
                     break;
                 case 'LTS':
                     ltsVersions.push(version);
@@ -92,7 +97,11 @@ async function getNodeVersionAvailableList() {
 
         });
 
-        const sortedVersionList = [...ltsVersions, ...commonVersions];
+        const sortedLtsVersions = [...ltsVersions].sort((a, b) => sortRemoteVersionList(a.version, b.version));
+
+        const sortedCurrentVersions = [...currentVersions].sort((a, b) => sortRemoteVersionList(a.version, b.version));
+
+        const sortedVersionList = [...sortedLtsVersions, ...sortedCurrentVersions];
 
         return { nodeRemoteList: sortedVersionList };
 
@@ -109,11 +118,19 @@ async function getCurrentNodeVersion() {
 
         const { stdout, stderr } = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm current"');
 
+        if (stdout.includes('No current version')) {
+            return { currentNodeVersion: stdout };
+        }
+
+        let currentVersion = stdout.replace('v', '');
+
+        currentVersion = currentVersion.trim();
+
         if (stderr) {
             throw new Error(stderr);
         }
 
-        return { currentNodeVersion: stdout };
+        return { currentNodeVersion: currentVersion };
 
     } catch (error) {
         console.error(error);
@@ -127,8 +144,6 @@ async function installNodeVersion(version: string) {
     try {
 
         const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm cache clear && nvm install ${version}"`);
-
-        
 
         if (!stderr.includes('Checksums matched!')) {
             throw new Error(stderr);
@@ -167,7 +182,7 @@ async function useNodeVersion(version: string) {
     try {
 
         const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm alias default ${version}"`);
-        
+
         if (stderr) {
             throw new Error(stderr);
         }
@@ -178,6 +193,44 @@ async function useNodeVersion(version: string) {
         console.error(error);
         return { error };
     }
+
+}
+
+function sortRemoteVersionList(a: any, b: any) {
+    const aParts = a.split('.').map(Number);
+    const bParts = b.split('.').map(Number);
+
+    for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+        const aPart = aParts[i] || 0;
+        const bPart = bParts[i] || 0;
+
+        if (aPart > bPart) {
+            return -1;
+        }
+        if (aPart < bPart) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+function sortVersionList(array: any) {
+
+    return array.sort(function (a: any, b: any) {
+        if (a === "system") {
+            return 1;
+        }
+        if (b === "system") {
+            return -1;
+        }
+        if (a > b) {
+            return -1;
+        }
+        if (a < b) {
+            return 1;
+        }
+        return 0;
+    });
 
 }
 

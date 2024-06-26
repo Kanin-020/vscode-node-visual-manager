@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 
-import fs from 'fs';
 import { getNonce } from './getNonce';
 import nvm from '../model/nvm';
 import nvmLinux from '../model/nvmLinux';
@@ -16,32 +15,30 @@ export class AvailableProvider implements vscode.WebviewViewProvider {
         this._view = webviewView;
 
         webviewView.webview.options = {
-            // Allow scripts in the webview
             enableScripts: true,
-
-            localResourceRoots: [this._extensionUri],
+            localResourceRoots: [vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview')],
         };
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
-                case "send-list-available": {
+                case 'send-list-available': {
 
                     getRemoteList(webviewView);
 
                     break;
+
                 }
-                case "send-install": {
+                case 'send-install': {
 
                     installVersion(data.data, webviewView);
 
                     break;
-
                 }
+
             }
         });
-
     }
 
     public revive(panel: vscode.WebviewView) {
@@ -50,87 +47,55 @@ export class AvailableProvider implements vscode.WebviewViewProvider {
 
     private _getHtmlForWebview(webview: vscode.Webview): string {
 
-        const styleGlobalUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "dist", "styles/global.css")
-        );
-
-        const styleVSCodeUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "dist", "styles/vscode.css")
-        );
-
-        const styleSidebar = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "dist", "styles/sidebar.css")
-        );
-
-        const styleIconsUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "dist", "styles/codicon.css")
-        );
-
         const scriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "dist", "controllers/available.js")
+            vscode.Uri.joinPath(this._extensionUri, "dist", "webview", "available.bundle.js")
         );
-
-        const htmlFilePath = vscode.Uri.joinPath(this._extensionUri, "dist", "pages/available.html").fsPath;
-        const htmlString = fs.readFileSync(htmlFilePath, 'utf-8');
 
         const nonce = getNonce();
 
+        const cspPolicy = `
+            default-src 'none';
+            font-src ${webview.cspSource};
+            img-src ${webview.cspSource} https: data:;
+            style-src ${webview.cspSource} 'unsafe-inline';
+            script-src ${webview.cspSource} 'nonce-${nonce}';
+        `;
+
         return `<!DOCTYPE html>
-            <html lang="en"
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Cat Coding</title>
+        <html lang="en"
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Available</title>
 
-
-                <meta http-equiv="Content-Security-Policy" content="font-src ${webview.cspSource}; img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
-
-                <link href="${styleSidebar}" rel="stylesheet">
-                <link href="${styleVSCodeUri}" rel="stylesheet">
-                <link href="${styleIconsUri}" rel="stylesheet">
-                <link href="${styleGlobalUri}" rel="stylesheet">
-
-                <script nonce="${nonce}">
-                    const clientVsCode = acquireVsCodeApi();
-                </script>
-
-            </head>
-            <body>
-                ${htmlString}
-                <script nonce="${nonce}" src="${scriptUri}" ></script>
-            </body>
-            </html>`;
-
+            <meta http-equiv="Content-Security-Policy" content="${cspPolicy}">
+        
+        </head>
+        <body>
+            <div id="available-root"></div>
+            <script nonce="${nonce}" src="${scriptUri}"></script>
+        </body>
+        </html>`;
 
     }
-
 }
 
 async function getRemoteList(webviewView: vscode.WebviewView) {
-
     try {
-
         const systemResponse = await nvm.verifyUserSystem();
 
         let response;
-
         switch (systemResponse.operativeSystem) {
             case 'win32':
                 response = await nvmWindows.getNodeVersionAvailableList();
                 break;
-
             case 'linux':
-                response = await nvmLinux.getNodeVersionAvailableList();
-                break;
-
             case 'darwin':
                 response = await nvmLinux.getNodeVersionAvailableList();
                 break;
-
-
             default:
                 vscode.window.showErrorMessage('Operative system not supported yet.');
-                throw Error;
+                throw new Error('Operative system not supported yet.');
         }
 
         if (response.error) {
@@ -140,43 +105,29 @@ async function getRemoteList(webviewView: vscode.WebviewView) {
         if (response.nodeRemoteList) {
             webviewView.webview.postMessage({ type: 'receive-list-available', data: response.nodeRemoteList });
         }
-
-
     } catch (error) {
-
         console.error(error);
-
     }
-
 }
 
 async function installVersion(version: string, webviewView: vscode.WebviewView) {
-
     try {
-
         vscode.window.showInformationMessage('Installing node version: ' + version);
 
         const systemResponse = await nvm.verifyUserSystem();
 
         let response;
-
         switch (systemResponse.operativeSystem) {
             case 'win32':
                 response = await nvmWindows.installNodeVersion(version);
                 break;
-
             case 'linux':
-                response = await nvmLinux.installNodeVersion(version);
-                break;
-
             case 'darwin':
                 response = await nvmLinux.installNodeVersion(version);
                 break;
-
-
             default:
                 vscode.window.showErrorMessage('Operative system not supported yet.');
-                throw Error;
+                throw new Error('Operative system not supported yet.');
         }
 
         if (response.error) {
@@ -189,13 +140,8 @@ async function installVersion(version: string, webviewView: vscode.WebviewView) 
             webviewView.webview.postMessage({ type: 'receive-install', data: response.id });
 
             await vscode.commands.executeCommand('workbench.action.webview.reloadWebviewAction');
-
         }
-
     } catch (error) {
-
         console.error(error);
-
     }
 }
-

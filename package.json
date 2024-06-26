@@ -1,7 +1,7 @@
 {
   "name": "node-visual-manager",
   "displayName": "Node Visual Manager",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "publisher": "kanin-020",
   "description": "Node Version Manager adaptation for VSCode.",
   "author": {
@@ -23,7 +23,7 @@
         {
           "id": "node-visual-manager-sidebar-view",
           "title": "Node Visual Manager",
-          "icon": "/dist/assets/nvm.svg"
+          "icon": "/dist/webview/assets/images/nvm.svg"
         }
       ]
     },
@@ -54,6 +54,10 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.7",
+    "@babel/preset-env": "^7.24.7",
+    "@babel/preset-react": "^7.24.7",
+    "@babel/preset-typescript": "^7.24.7",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "@types/vscode": "^1.86.0",
@@ -61,19 +65,26 @@
     "@typescript-eslint/parser": "^6.19.1",
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.9",
+    "babel-loader": "^9.1.3",
     "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
     "css-minimizer-webpack-plugin": "^6.0.0",
     "eslint": "^8.56.0",
     "html-minimizer-webpack-plugin": "^5.0.0",
+    "style-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.3.10",
     "ts-loader": "^9.5.1",
-    "typescript": "^5.3.3",
-    "webpack": "^5.90.0",
+    "typescript": "^5.5.2",
+    "webpack": "^5.92.1",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.35",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "process": "^0.11.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "window-or-global": "^1.0.1"
   },
   "license": "SEE LICENSE IN LICENSE.txt",
   "bugs": {

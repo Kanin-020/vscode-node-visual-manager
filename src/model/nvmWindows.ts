@@ -110,7 +110,7 @@ async function getNodeVersionAvailableList() {
 
         });
 
-        const sortedVersionList = [...currentVersions, ...ltsVersions, ...oldStableVersions, ...oldUnstableVersions];
+        const sortedVersionList = [...ltsVersions, ...currentVersions, ...oldStableVersions, ...oldUnstableVersions];
 
         return { nodeRemoteList: sortedVersionList };
 
@@ -127,11 +127,19 @@ async function getCurrentNodeVersion() {
 
         const { stdout, stderr } = await execAsync('nvm current');
 
+        if (stdout.includes('No current version')) {
+            return { currentNodeVersion: stdout };
+        }
+
+        let currentVersion = stdout.replace('v', '');
+
+        currentVersion = currentVersion.trim();
+
         if (stderr) {
             throw new Error(stderr);
         }
 
-        return { currentNodeVersion: stdout };
+        return { currentNodeVersion: currentVersion };
 
     } catch (error) {
         console.error(error);
