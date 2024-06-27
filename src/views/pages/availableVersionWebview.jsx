@@ -5,11 +5,11 @@ import React, { Suspense } from 'react';
 
 import { createRoot } from 'react-dom/client';
 
-const AvailableBar = React.lazy(() => import('../components/AvailableBar/AvailableBar.jsx'));
+const AvailableVersionsBar = React.lazy(() => import('../components/AvailableVersionsBar/AvailableVersionsBar'));
 
 const AvailableApp = () => (
   <Suspense fallback={<div>Loading...</div>}>
-    <AvailableBar />
+    <AvailableVersionsBar />
   </Suspense>
 );
 

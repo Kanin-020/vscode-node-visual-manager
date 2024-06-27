@@ -31,7 +31,7 @@
       "node-visual-manager-sidebar-view": [
         {
           "type": "webview",
-          "id": "node-visual-manager-sidebar",
+          "id": "node-visual-manager-sidebar-current",
           "name": "Node Visual Manager"
         },
         {

@@ -5,7 +5,7 @@ import nvm from '../model/nvm';
 import nvmLinux from '../model/nvmLinux';
 import nvmWindows from '../model/nvmWindows';
 
-export class SidebarProvider implements vscode.WebviewViewProvider {
+export class CurrentVersionProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
     _doc?: vscode.TextDocument;
 
@@ -87,7 +87,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     private _getHtmlForWebview(webview: vscode.Webview): string {
 
         const scriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "dist", "webview", "sidebar.bundle.js")
+            vscode.Uri.joinPath(this._extensionUri, "dist", "webview", "current.bundle.js")
         );
 
         const nonce = getNonce();
@@ -105,13 +105,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>SideBar</title>
+                <title>Current</title>
 
                 <meta http-equiv="Content-Security-Policy" content="${cspPolicy}">
             
             </head>
             <body>
-                <div id="sidebar-root"></div>
+                <div id="current-root"></div>
                 <script nonce="${nonce}" src="${scriptUri}"></script>
             </body>
             </html>`;

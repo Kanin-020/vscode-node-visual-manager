@@ -5,7 +5,7 @@ import nvm from '../model/nvm';
 import nvmLinux from '../model/nvmLinux';
 import nvmWindows from '../model/nvmWindows';
 
-export class AvailableProvider implements vscode.WebviewViewProvider {
+export class AvailableVersionProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
     _doc?: vscode.TextDocument;
 

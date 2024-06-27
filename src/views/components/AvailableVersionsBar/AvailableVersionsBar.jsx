@@ -1,4 +1,4 @@
-import './AvailableBar.css';
+import './AvailableVersionsBar.css';
 
 import React, { useEffect, useState } from 'react';
 
@@ -6,7 +6,7 @@ import SearchBar from '../SearchBar/SearchBar';
 
 const vscode = acquireVsCodeApi();
 
-const AvailableBar = () => {
+const AvailableVersionsBar = () => {
   const [nodeVersions, setNodeVersions] = useState([]);
   const [filteredVersions, setFilteredVersions] = useState([]);
 
@@ -87,4 +87,4 @@ const getTagClass = (type) => {
   }
 };
 
-export default AvailableBar;
+export default React.memo(AvailableVersionsBar);

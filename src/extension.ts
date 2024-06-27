@@ -3,18 +3,18 @@
 
 import * as vscode from 'vscode';
 
-import { AvailableProvider } from './providers/availableProvider';
-import { SidebarProvider } from './providers/sidebarProvider';
+import { AvailableVersionProvider } from './providers/availableVersionProvider';
+import { CurrentVersionProvider } from './providers/currentVersionProvider';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	const sidebarProvider = new SidebarProvider(context.extensionUri);
+	const sidebarVersionProvider = new CurrentVersionProvider(context.extensionUri);
 
-	const availableProvider = new AvailableProvider(context.extensionUri);
+	const availableVersionProvider = new AvailableVersionProvider(context.extensionUri);
 
-	context.subscriptions.push(vscode.window.registerWebviewViewProvider("node-visual-manager-sidebar", sidebarProvider));
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider("node-visual-manager-sidebar-current", sidebarVersionProvider));
 
-	context.subscriptions.push(vscode.window.registerWebviewViewProvider("node-visual-manager-sidebar-available", availableProvider));
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider("node-visual-manager-sidebar-available", availableVersionProvider));
 
 }
 

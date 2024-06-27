@@ -40,10 +40,10 @@ const extensionConfig = {
 
 const webviewConfig = {
   target: 'web',
-  mode: 'production', 
+  mode: 'production',
   entry: {
-    available: './src/views/pages/availableWebview.jsx',
-    sidebar: './src/views/pages/sidebarWebview.jsx'
+    current: './src/views/pages/currentVersionWebview.jsx',
+    available: './src/views/pages/availableVersionWebview.jsx',
   },
   output: {
     path: path.resolve(__dirname, 'dist', 'webview'),
