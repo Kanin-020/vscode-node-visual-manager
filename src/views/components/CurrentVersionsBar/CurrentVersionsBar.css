@@ -26,46 +26,6 @@ body {
     text-transform: uppercase;
 }
 
-.options {
-    display: none;
-    gap: 5px;
-    position: absolute;
-    right: 0;
-}
-
-.node-item {
-    position: relative;
-    margin: 1px;
-    padding: 0 0.75rem;
-    line-height: 18px;
-}
-
-.node-item-content {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    position: relative;
-    gap: 16px;
-    padding: 0px 10px;
-}
-
-.version {
-    display: block;
-    flex-grow: 1;
-    overflow: hidden;
-    padding: 5px 0;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.current {
-    display: none;
-    color: var(--vscode-gitDecoration-untrackedResourceForeground);
-}
-
-.tag{
-    display: flex;
-}
 
 .footer {
     padding: 0 7px;
@@ -110,19 +70,6 @@ body {
 
 .off {
     color: var(--vscode-charts-red);
-}
-
-.node-item:hover {
-    background-color: var(--vscode-list-hoverBackground);
-
-    .options {
-        display: flex;
-    }
-
-    .tag {
-        display: none;
-    }
-
 }
 
 .footer-item:hover {

@@ -17,6 +17,7 @@ export class AvailableVersionProvider implements vscode.WebviewViewProvider {
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: [vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview')],
+            
         };
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);

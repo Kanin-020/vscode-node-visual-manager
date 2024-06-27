@@ -1,7 +1,8 @@
 import './CurrentVersionsBar.css';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
+import CurrentVersionItem from '../CurrentVersionItem/CurrentVersionItem';
 import SearchBar from '../SearchBar/SearchBar';
 
 const vscode = acquireVsCodeApi();
@@ -109,32 +110,27 @@ const CurrentVersionsBar = () => {
 
   };
 
+  const renderedVersions = useMemo(() => {
+    return filteredVersions.map((version, index) => (
+      <CurrentVersionItem
+        key={index} 
+        version={version}
+        currentVersionState={currentVersionState}
+        useNodeVersion={useNodeVersion}
+        uninstallNodeVersion={uninstallNodeVersion}
+        toggleNVMState={toggleNVMState}
+      />
+    ));
+  }, [filteredVersions, currentVersionState, useNodeVersion, uninstallNodeVersion, toggleNVMState]);
+
+
   return (
     <div className="container">
       <SearchBar setFilteredVersions={setFilteredVersions} allVersions={nodeVersions} type={"array"} />
       <div className="content">
         <h2 className="title">NODE VERSIONS</h2>
         <div id="item-list">
-          {filteredVersions.map((version, index) => (
-            <div className="node-item" key={index}>
-              <div className="node-item-content">
-                <span className="version">{version}</span>
-                <span
-                  className="tag current"
-                  style={{ visibility: version === currentVersionState ? 'visible' : 'hidden' }}
-                  onClick={toggleNVMState}
-                >Current</span>
-                <div className="options">
-                  <a className="action" onClick={() => useNodeVersion(version)}>
-                    <i className="codicon codicon-run"></i>
-                  </a>
-                  <a className="action" onClick={() => uninstallNodeVersion(version)}>
-                    <i className="codicon codicon-close"></i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          ))}
+          {renderedVersions}
         </div>
       </div>
       <div className="footer" id="footer">

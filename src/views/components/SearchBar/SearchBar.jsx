@@ -42,4 +42,4 @@ const SearchBar = ({ setFilteredVersions, allVersions, type }) => {
     );
 };
 
-export default SearchBar;
+export default React.memo(SearchBar);

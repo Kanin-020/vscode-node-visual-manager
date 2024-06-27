@@ -1,0 +1,53 @@
+.node-item {
+    position: relative;
+    margin: 1px;
+    padding: 0 0.75rem;
+    line-height: 18px;
+}
+
+.node-item-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    gap: 16px;
+    padding: 0px 10px;
+}
+
+.version {
+    display: block;
+    flex-grow: 1;
+    overflow: hidden;
+    padding: 5px 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.current {
+    color: var(--vscode-list-highlightForeground);
+}
+
+.lts {
+    color: var(--vscode-inputValidation-infoBorder);
+}
+
+.old-stable {
+    color: var(--vscode-inputValidation-warningBorder);
+}
+
+.old-unstable {
+    color: var(--vscode-inputValidation-errorBorder);
+}
+
+.node-item:hover {
+    background-color: var(--vscode-list-hoverBackground);
+
+    .options {
+        display: flex;
+    }
+
+    .tag {
+        display: none;
+    }
+
+}
