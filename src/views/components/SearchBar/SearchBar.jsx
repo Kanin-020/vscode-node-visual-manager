@@ -16,12 +16,12 @@ const SearchBar = ({ setFilteredVersions, allVersions, type }) => {
                 const filtered = allVersions.filter(version => version.toLowerCase().includes(value));
 
                 setFilteredVersions(filtered);
-            }
-
-            if (type === 'object') {
+                
+            } else if (type === 'object') {
                 const filtered = allVersions.filter(item => item.version.toLowerCase().includes(value) || item.type.toLowerCase().includes(value));
 
                 setFilteredVersions(filtered);
+                
             }
         }
     };

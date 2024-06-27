@@ -1,6 +1,6 @@
 import './CurrentVersionsBar.css';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import CurrentVersionItem from '../CurrentVersionItem/CurrentVersionItem';
 import SearchBar from '../SearchBar/SearchBar';
@@ -10,9 +10,7 @@ const vscode = acquireVsCodeApi();
 const CurrentVersionsBar = () => {
   const [nodeVersions, setNodeVersions] = useState([]);
   const [filteredVersions, setFilteredVersions] = useState([]);
-
   const [currentVersionState, setCurrentVersionState] = useState(null);
-
   const [enableButtonVisible, setEnableButtonVisible] = useState(false);
   const [enableButtonState, setEnableButtonState] = useState(false);
 
@@ -23,73 +21,36 @@ const CurrentVersionsBar = () => {
     getNodeVersionList();
 
     const handleMessage = event => {
-
-      const message = event.data;
-
-      switch (message.type) {
+      const { type, data } = event.data;
+      switch (type) {
         case 'receive-os':
-
-          if (message.data === 'win32') {
-            setEnableButtonVisible(true);
-          } else {
-            setEnableButtonVisible(false);
-          }
-
+          setEnableButtonVisible(data === 'win32');
           break;
         case 'receive-list':
-
-          setNodeVersions(message.data);
-
+          setNodeVersions(data);
           break;
         case 'receive-current':
-
-          if (message.data.includes('No current version')) {
-            setEnableButtonState(false);
-            setCurrentVersionState(null);
-          } else {
-            setCurrentVersionState(message.data);
-            setEnableButtonState(true);
-          }
-
+          const isNoCurrentVersion = data.includes('No current version');
+          setEnableButtonState(!isNoCurrentVersion);
+          setCurrentVersionState(isNoCurrentVersion ? null : data);
           setFilteredVersions(prev => prev.map(version =>
-            version.name === message.data ? { ...version, current: true } : version));
-
+            version.name === data ? { ...version, current: true } : version
+          ));
           break;
-
-
         case 'receive-use':
-
-          getCurrentNodeVersion();
-
-          setCurrentVersionState(message.data);
-
-          break;
-
-        case 'receive-uninstall':
-
-          setNodeVersions(prev => prev.filter(version => version !== message.data));
-
-          break;
-
         case 'receive-on':
-
-          getCurrentNodeVersion();
-
-          break;
-
         case 'receive-off':
-
           getCurrentNodeVersion();
-
           break;
-
+        case 'receive-uninstall':
+          setNodeVersions(prev => prev.filter(version => version !== data));
+          break;
         default:
           break;
       }
     };
 
     window.addEventListener('message', handleMessage);
-
     return () => {
       window.removeEventListener('message', handleMessage);
     };
@@ -99,30 +60,26 @@ const CurrentVersionsBar = () => {
     setFilteredVersions(nodeVersions);
   }, [nodeVersions]);
 
-
-  const toggleNVMState = () => {
-
-    if (enableButtonState === true) {
+  const toggleNVMState = useCallback(() => {
+    if (enableButtonState) {
       disableNvm();
-    } else if (enableButtonState === false) {
+    } else {
       enableNvm();
     }
+  }, [enableButtonState]);
 
-  };
-
-  const renderedVersions = useMemo(() => {
-    return filteredVersions.map((version, index) => (
+  const renderedVersions = useMemo(() => (
+    filteredVersions.map((version, index) => (
       <CurrentVersionItem
-        key={index} 
+        key={index}
         version={version}
         currentVersionState={currentVersionState}
         useNodeVersion={useNodeVersion}
         uninstallNodeVersion={uninstallNodeVersion}
         toggleNVMState={toggleNVMState}
       />
-    ));
-  }, [filteredVersions, currentVersionState, useNodeVersion, uninstallNodeVersion, toggleNVMState]);
-
+    ))
+  ), [filteredVersions, currentVersionState, useNodeVersion, uninstallNodeVersion, toggleNVMState]);
 
   return (
     <div className="container">
@@ -134,7 +91,12 @@ const CurrentVersionsBar = () => {
         </div>
       </div>
       <div className="footer" id="footer">
-        <div className="footer-item" id="enable-button" style={{ visibility: enableButtonVisible === true ? 'visible' : 'hidden' }} onClick={toggleNVMState}>
+        <div
+          className="footer-item"
+          id="enable-button"
+          style={{ visibility: enableButtonVisible ? 'visible' : 'hidden' }}
+          onClick={toggleNVMState}
+        >
           <div className="footer-item-content">
             <i className={`codicon footer-icon ${enableButtonState ? 'codicon-sync on' : 'codicon-sync-ignored off'}`}></i>
           </div>

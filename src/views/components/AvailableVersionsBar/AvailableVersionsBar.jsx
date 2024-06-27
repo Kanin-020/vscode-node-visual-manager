@@ -1,6 +1,6 @@
 import './AvailableVersionsBar.css';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import AvailableVersionItem from '../AvailableVersionItem/AvailableVersionItem';
 import SearchBar from '../SearchBar/SearchBar';
@@ -12,17 +12,12 @@ const AvailableVersionsBar = () => {
   const [filteredVersions, setFilteredVersions] = useState([]);
 
   useEffect(() => {
-
     getNodeVersionAvailableList();
 
     const handleMessage = (event) => {
-
       const message = event.data;
-
       if (message.type === 'receive-list-available') {
-
         setNodeVersions(message.data);
-
       }
     };
 
@@ -31,12 +26,15 @@ const AvailableVersionsBar = () => {
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-
   }, []);
 
   useEffect(() => {
     setFilteredVersions(nodeVersions);
   }, [nodeVersions]);
+
+  const installNodeVersion = useCallback(async (version) => {
+    vscode.postMessage({ type: 'send-install', data: version });
+  }, []);
 
   const renderedVersions = useMemo(() => {
     return filteredVersions.map((item, index) => (
@@ -47,7 +45,6 @@ const AvailableVersionsBar = () => {
       />
     ));
   }, [filteredVersions, installNodeVersion]);
-  
 
   return (
     <div className="container">
@@ -58,16 +55,12 @@ const AvailableVersionsBar = () => {
           {renderedVersions}
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 
 async function getNodeVersionAvailableList() {
   vscode.postMessage({ type: 'send-list-available' });
-}
-
-async function installNodeVersion(version) {
-  vscode.postMessage({ type: 'send-install', data: version });
 }
 
 export default React.memo(AvailableVersionsBar);
