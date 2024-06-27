@@ -50,6 +50,10 @@ Name display correction.
 
 Auto installation issue in Linux fixed.
 
+### 1.1.3
+
+Performance and stability improvements.
+
 ---
 
 ## Issues Repository
