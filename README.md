@@ -54,6 +54,10 @@ Auto installation issue in Linux fixed.
 
 Performance and stability improvements.
 
+### 1.1.4
+
+Performance and stability improvements.
+
 ---
 
 ## Issues Repository
