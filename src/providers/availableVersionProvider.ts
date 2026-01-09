@@ -1,9 +1,8 @@
 import * as vscode from 'vscode';
 
 import { getNonce } from './getNonce';
-import nvm from '../model/nvm';
-import nvmLinux from '../model/nvmLinux';
-import nvmWindows from '../model/nvmWindows';
+
+import nvm from '@entities/nvm';
 
 export class AvailableVersionProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
@@ -17,24 +16,20 @@ export class AvailableVersionProvider implements vscode.WebviewViewProvider {
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: [vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview')],
-            
+
         };
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
+
             switch (data.type) {
                 case 'send-list-available': {
-
                     getRemoteList(webviewView);
-
                     break;
-
                 }
                 case 'send-install': {
-
                     installVersion(data.data, webviewView);
-
                     break;
                 }
 
@@ -83,21 +78,8 @@ export class AvailableVersionProvider implements vscode.WebviewViewProvider {
 
 async function getRemoteList(webviewView: vscode.WebviewView) {
     try {
-        const systemResponse = await nvm.verifyUserSystem();
 
-        let response;
-        switch (systemResponse.operativeSystem) {
-            case 'win32':
-                response = await nvmWindows.getNodeVersionAvailableList();
-                break;
-            case 'linux':
-            case 'darwin':
-                response = await nvmLinux.getNodeVersionAvailableList();
-                break;
-            default:
-                vscode.window.showErrorMessage('Operative system not supported yet.');
-                throw new Error('Operative system not supported yet.');
-        }
+        const response = (await nvm).getAvailableVersionList();
 
         if (response.error) {
             vscode.window.showErrorMessage('Could not get available node version list. Verify your internet connection.');
@@ -106,6 +88,7 @@ async function getRemoteList(webviewView: vscode.WebviewView) {
         if (response.nodeRemoteList) {
             webviewView.webview.postMessage({ type: 'receive-list-available', data: response.nodeRemoteList });
         }
+
     } catch (error) {
         console.error(error);
     }
@@ -113,23 +96,10 @@ async function getRemoteList(webviewView: vscode.WebviewView) {
 
 async function installVersion(version: string, webviewView: vscode.WebviewView) {
     try {
+
         vscode.window.showInformationMessage('Installing node version: ' + version);
 
-        const systemResponse = await nvm.verifyUserSystem();
-
-        let response;
-        switch (systemResponse.operativeSystem) {
-            case 'win32':
-                response = await nvmWindows.installNodeVersion(version);
-                break;
-            case 'linux':
-            case 'darwin':
-                response = await nvmLinux.installNodeVersion(version);
-                break;
-            default:
-                vscode.window.showErrorMessage('Operative system not supported yet.');
-                throw new Error('Operative system not supported yet.');
-        }
+        const response = (await nvm).install(version);
 
         if (response.error) {
             vscode.window.showErrorMessage('Could not install the requested version.');

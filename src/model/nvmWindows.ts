@@ -1,20 +1,23 @@
+import { nvmAdapter } from '@interfaces/nvm';
+import { NvmResponse } from '@interfaces/nvmResponse';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
-const nvmWindows = {
-    getNodeVersionList,
-    getNodeVersionAvailableList,
+const nvmWindows: nvmAdapter = {
+    currentNodeVersion: '10',
+    getInstalledVersionList,
+    getAvailableVersionList,
     getCurrentNodeVersion,
-    installNodeVersion,
-    uninstallNodeVersion,
-    useNodeVersion,
-    enableNVM,
-    disableNVM,
+    install,
+    uninstall,
+    useVersion,
+    enable,
+    disable,
 };
 
-async function getNodeVersionList() {
+async function getInstalledVersionList() {
 
     try {
 
@@ -37,7 +40,7 @@ async function getNodeVersionList() {
 
 }
 
-async function getNodeVersionAvailableList() {
+async function getAvailableVersionList() {
 
     try {
 
@@ -148,7 +151,7 @@ async function getCurrentNodeVersion() {
 
 }
 
-async function installNodeVersion(version: string) {
+async function install(version: string): Promise<NvmResponse> {
 
     try {
 
@@ -178,7 +181,7 @@ async function installNodeVersion(version: string) {
 
 }
 
-async function uninstallNodeVersion(version: string) {
+async function uninstall(version: string): Promise<NvmResponse> {
 
     try {
 
@@ -197,7 +200,7 @@ async function uninstallNodeVersion(version: string) {
 
 }
 
-async function useNodeVersion(version: string) {
+async function useVersion(version: string): Promise<NvmResponse> {
 
     try {
 
@@ -217,7 +220,7 @@ async function useNodeVersion(version: string) {
 }
 
 
-async function enableNVM() {
+async function enable() {
 
     try {
 
@@ -236,7 +239,7 @@ async function enableNVM() {
 
 }
 
-async function disableNVM() {
+async function disable() {
 
     try {
 

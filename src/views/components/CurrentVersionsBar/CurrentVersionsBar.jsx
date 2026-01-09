@@ -114,20 +114,9 @@ const CurrentVersionsBar = () => {
   );
 };
 
-async function verifyNvmIsInstalled() {
-  vscode.postMessage({ type: 'send-nvm' });
-}
-
-async function getCurrentOS() {
-  vscode.postMessage({ type: 'send-os' });
-}
 
 async function getNodeVersionList() {
   vscode.postMessage({ type: 'send-list' });
-}
-
-async function getCurrentNodeVersion() {
-  vscode.postMessage({ type: 'send-current' });
 }
 
 async function useNodeVersion(version) {

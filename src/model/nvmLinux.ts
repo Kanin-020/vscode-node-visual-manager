@@ -1,18 +1,21 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { NvmResponse } from '@interfaces/nvmResponse';
+import { nvmAdapter } from '@interfaces/nvm';
 
 const execAsync = promisify(exec);
 
-const nvmLinux = {
-    getNodeVersionList,
-    getNodeVersionAvailableList,
+const nvmLinux: nvmAdapter = {
+    currentNodeVersion: '10',
+    getInstalledVersionList,
+    getAvailableVersionList,
     getCurrentNodeVersion,
-    installNodeVersion,
-    uninstallNodeVersion,
-    useNodeVersion,
+    install,
+    uninstall,
+    useVersion,
 };
 
-async function getNodeVersionList() {
+async function getInstalledVersionList() {
 
     try {
 
@@ -41,7 +44,7 @@ async function getNodeVersionList() {
 
 }
 
-async function getNodeVersionAvailableList() {
+async function getAvailableVersionList() {
 
     try {
 
@@ -139,26 +142,24 @@ async function getCurrentNodeVersion() {
 
 }
 
-async function installNodeVersion(version: string) {
 
+async function install(version: string): Promise<NvmResponse> {
     try {
-
-        const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm cache clear && nvm install ${version}"`);
+        const { stdout, stderr } = await execAsync(
+            `bash -c "source ~/.nvm/nvm.sh && nvm cache clear && nvm install ${version}"`
+        );
 
         if (!stderr.includes('Checksums matched!')) {
             throw new Error(stderr);
         }
 
         return { message: stdout, id: version };
-
     } catch (error) {
-        console.error(error);
         return { error };
     }
-
 }
 
-async function uninstallNodeVersion(version: string) {
+async function uninstall(version: string): Promise<NvmResponse> {
 
     try {
 
@@ -177,7 +178,7 @@ async function uninstallNodeVersion(version: string) {
 
 }
 
-async function useNodeVersion(version: string) {
+async function useVersion(version: string): Promise<NvmResponse> {
 
     try {
 
