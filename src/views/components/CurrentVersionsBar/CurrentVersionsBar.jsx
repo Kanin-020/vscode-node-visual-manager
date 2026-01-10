@@ -100,10 +100,10 @@ const CurrentVersionsBar = () => {
           </div>
           <span className="footer-text">{enableButtonState ? 'ON' : 'OFF'}</span>
         </div>
-        <a className="heart" href="https://jesus-alvarez-portfolio.web.app/">
+        <a className="account" href="https://jesus-alvarez-portfolio.web.app/">
           <div className="footer-item">
             <div className="footer-item-content">
-              <i className="codicon codicon-heart"></i>
+              <i className="codicon codicon-account"></i>
             </div>
           </div>
         </a>

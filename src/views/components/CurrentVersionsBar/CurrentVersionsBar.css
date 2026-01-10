@@ -2,20 +2,23 @@ body {
     background: var(--vscode-sideBar-background) !important;
 }
 
-#item-list {
-    padding: 1rem 0rem 15% 0rem;
-}
-
 .container {
+    display: flex;
+    flex-direction: column;
     height: 100vh;
 }
 
 .content {
-    position: relative;
-    overflow-x: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#item-list {
+    flex: 1;
     overflow-y: auto;
-    width: 100%;
-    height: 100%;
+    overflow-x: hidden;
 }
 
 .title {
@@ -80,6 +83,6 @@ body {
     font-weight: 900;
 }
 
-.heart {
+.account {
     color: transparent !important;
 }
