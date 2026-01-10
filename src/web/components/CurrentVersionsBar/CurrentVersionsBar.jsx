@@ -11,18 +11,24 @@ const CurrentVersionsBar = () => {
   const [nodeVersions, setNodeVersions] = useState([]);
   const [filteredVersions, setFilteredVersions] = useState([]);
   const [currentVersionState, setCurrentVersionState] = useState(null);
-  const [enableButtonVisible, setEnableButtonVisible] = useState(false);
   const [enableButtonState, setEnableButtonState] = useState(false);
+  const [enableButtonVisible, setEnableButtonVisible] = useState(false);
+  const [showCurrentLabel, setShowCurrentLabel] = useState(false);
+
+  let isWin;
 
   useEffect(() => {
     getCurrentNodeVersion();
     getNodeVersionList();
+    getOperativeSystem();
 
     const handleMessage = event => {
       const { type, data } = event.data;
       switch (type) {
         case 'receive-os':
-          setEnableButtonVisible(data === 'win32');
+          isWin = (data === 'win32');
+          setEnableButtonVisible(isWin);
+          setShowCurrentLabel(isWin);
           break;
         case 'receive-list':
           setNodeVersions(data);
@@ -75,6 +81,7 @@ const CurrentVersionsBar = () => {
         useNodeVersion={useNodeVersion}
         uninstallNodeVersion={uninstallNodeVersion}
         toggleNVMState={toggleNVMState}
+        showCurrentLabel={showCurrentLabel}
       />
     ))
   ), [filteredVersions, currentVersionState, useNodeVersion, uninstallNodeVersion, toggleNVMState]);
@@ -111,6 +118,10 @@ const CurrentVersionsBar = () => {
     </div>
   );
 };
+
+async function getOperativeSystem() {
+  vscode.postMessage({ type: 'send-os' });
+}
 
 async function getCurrentNodeVersion() {
   vscode.postMessage({ type: 'send-current' });

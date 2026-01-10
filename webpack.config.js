@@ -48,8 +48,8 @@ const webviewConfig = {
   target: 'web',
   mode: 'production',
   entry: {
-    current: './src/views/pages/currentVersionWebview.jsx',
-    available: './src/views/pages/availableVersionWebview.jsx',
+    current: './src/web/pages/currentVersionWebview.jsx',
+    available: './src/web/pages/availableVersionWebview.jsx',
   },
   output: {
     path: path.resolve(__dirname, 'dist', 'webview'),
@@ -88,7 +88,7 @@ const webviewConfig = {
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'src/assets', to: 'assets' }
+        { from: 'src/web/assets', to: 'assets' }
       ]
     })
   ],

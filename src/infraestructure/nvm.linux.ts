@@ -2,6 +2,7 @@ import { nvmAdapter } from '@core/nvm.adapter';
 import { NvmResponse } from '@core/nvm.response.';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import * as vscode from 'vscode';
 
 
 const execAsync = promisify(exec);
@@ -178,24 +179,32 @@ async function uninstall(version: string): Promise<NvmResponse> {
 
 }
 
-async function useVersion(version: string): Promise<NvmResponse> {
 
+
+async function useVersion(version: string): Promise<NvmResponse> {
     try {
 
-        const { stdout, stderr } = await execAsync(`bash -c "source ~/.nvm/nvm.sh && nvm alias default ${version}"`);
+        const terminal = vscode.window.createTerminal({
+            name: `Node ${version}`,
+            shellPath: 'bash',
+            shellArgs: [
+                '-c',
+                `source ~/.nvm/nvm.sh && nvm use ${version} && exec bash`
+            ]
+        });
 
-        if (stderr) {
-            throw new Error(stderr);
-        }
+        terminal.show();
 
-        return { message: stdout, id: version };
+        return {
+            message: `Now using node ${version}`,
+            id: version
+        };
 
     } catch (error) {
-        console.error(error);
         return { error };
     }
-
 }
+
 
 function sortRemoteVersionList(a: any, b: any) {
     const aParts = a.split('.').map(Number);

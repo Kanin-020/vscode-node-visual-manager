@@ -2,14 +2,14 @@ import './CurrentVersionItem.css';
 
 import React from 'react';
 
-const CurrentVersionItem = ({ version, currentVersionState, useNodeVersion, uninstallNodeVersion, toggleNVMState }) => {
+const CurrentVersionItem = ({ version, currentVersionState, useNodeVersion, uninstallNodeVersion, toggleNVMState, showCurrentLabel }) => {
     return (
         <div className="node-item">
             <div className="node-item-content">
                 <span className="version">{version}</span>
                 <span
                     className="tag current"
-                    style={{ visibility: version === currentVersionState ? 'visible' : 'hidden' }}
+                    style={{ visibility: (version === currentVersionState && showCurrentLabel) ? 'visible' : 'hidden' }}
                     onClick={toggleNVMState}
                 >Current</span>
                 <div className="options">

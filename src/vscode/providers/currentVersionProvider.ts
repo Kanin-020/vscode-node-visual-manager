@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 
 import { getNonce } from '../csp/getNonce';
 import nvm from '@core/nvm';
+import os from "os";
 
 
 export class CurrentVersionProvider implements vscode.WebviewViewProvider {
@@ -22,6 +23,13 @@ export class CurrentVersionProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
+
+                case "send-os": {
+                    const system = os.platform();
+                    webviewView.webview.postMessage({ type: 'receive-os', data: system });
+
+                    break;
+                }
 
                 case "send-current": {
 

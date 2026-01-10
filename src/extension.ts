@@ -3,8 +3,8 @@
 
 import * as vscode from 'vscode';
 
-import { AvailableVersionProvider } from './providers/availableVersionProvider';
-import { CurrentVersionProvider } from './providers/currentVersionProvider';
+import { AvailableVersionProvider } from './vscode/providers/availableVersionProvider';
+import { CurrentVersionProvider } from './vscode/providers/currentVersionProvider';
 
 export function activate(context: vscode.ExtensionContext) {
 
