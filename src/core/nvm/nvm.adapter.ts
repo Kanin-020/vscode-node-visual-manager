@@ -1,4 +1,4 @@
-import { CurrentVersionListResponse, ActionResponse, StatusResponse, AvailableVersionListResponse, CurrentVersionResponse } from "./nvm.response";
+import { CurrentVersionListResponse, ActionResponse, StatusResponse, AvailableVersionListResponse, CurrentVersionResponse } from "../types/response";
 
 
 export interface nvmAdapter {

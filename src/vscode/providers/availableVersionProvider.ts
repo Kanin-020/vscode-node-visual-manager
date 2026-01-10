@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 import { getNonce } from '../csp/getNonce';
-import nvm from '@core/nvm';
+import nvm from '@core/nvm/nvm';
 
 export class AvailableVersionProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;

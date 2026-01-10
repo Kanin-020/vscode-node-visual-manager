@@ -1,4 +1,4 @@
-import { Version } from "@infraestructure/interfaces/version";
+import { Version } from "./version";
 
 export type CurrentVersionResponse =
     | {

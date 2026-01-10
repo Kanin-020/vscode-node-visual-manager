@@ -1,4 +1,4 @@
-export interface Version {
+export type Version = {
     version: string;
     type: string
-}
+};

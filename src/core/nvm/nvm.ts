@@ -1,8 +1,8 @@
-import nvmLinux from '@infraestructure/nvm.linux';
-import nvmWindows from '@infraestructure/nvm.windows';
+import nvmLinux from '@infraestructure/nvm/nvm.linux';
+import nvmWindows from '@infraestructure/nvm/nvm.windows';
 import os from 'node:os';
 import { nvmAdapter } from './nvm.adapter';
-import { ActionResponse, AvailableVersionListResponse, CurrentVersionListResponse, CurrentVersionResponse, StatusResponse } from './nvm.response';
+import { ActionResponse, AvailableVersionListResponse, CurrentVersionListResponse, CurrentVersionResponse, StatusResponse } from '../types/response';
 
 class NVM {
     private static instance: NVM;

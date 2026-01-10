@@ -1,8 +1,8 @@
-import { nvmAdapter } from '../core/nvm.adapter';
-import { CurrentVersionListResponse, ActionResponse, StatusResponse, AvailableVersionListResponse, CurrentVersionResponse } from '../core/nvm.response';
+import { nvmAdapter } from '../../core/nvm/nvm.adapter';
+import { CurrentVersionListResponse, ActionResponse, StatusResponse, AvailableVersionListResponse, CurrentVersionResponse } from '../../core/types/response';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { Version } from './interfaces/version';
+import { Version } from '../types/version';
 
 const execAsync = promisify(exec);
 
