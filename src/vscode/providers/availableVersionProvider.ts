@@ -85,8 +85,8 @@ async function getRemoteList(webviewView: vscode.WebviewView) {
             return;
         }
 
-        if (response.nodeRemoteList) {
-            webviewView.webview.postMessage({ type: 'receive-list-available', data: response.nodeRemoteList });
+        if (response.nodeList) {
+            webviewView.webview.postMessage({ type: 'receive-list-available', data: response.nodeList });
         }
 
     } catch (error) {

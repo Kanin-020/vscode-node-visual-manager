@@ -2,6 +2,7 @@ import nvmLinux from '@infraestructure/nvm.linux';
 import nvmWindows from '@infraestructure/nvm.windows';
 import os from 'node:os';
 import { nvmAdapter } from './nvm.adapter';
+import { ActionResponse, AvailableVersionListResponse, CurrentVersionListResponse, CurrentVersionResponse, StatusResponse } from './nvm.response';
 
 class NVM {
     private static instance: NVM;
@@ -18,41 +19,41 @@ class NVM {
         return this.instance;
     }
 
-    public async getCurrentNodeVersion() {
+    public async getCurrentNodeVersion(): Promise<CurrentVersionResponse> {
         return this.implementation.getCurrentNodeVersion();
     }
 
-    public async getInstalledVersionList() {
+    public async getInstalledVersionList(): Promise<CurrentVersionListResponse> {
         return this.implementation.getInstalledVersionList();
     }
 
-    public async getAvailableVersionList() {
+    public async getAvailableVersionList(): Promise<AvailableVersionListResponse> {
         return this.implementation.getAvailableVersionList();
     }
 
-    public async useVersion(version: string) {
+    public async useVersion(version: string): Promise<ActionResponse> {
         return this.implementation.useVersion(version);
     }
 
-    public async install(version: string) {
+    public async install(version: string): Promise<ActionResponse> {
         return this.implementation.install(version);
     }
 
-    public async uninstall(version: string) {
+    public async uninstall(version: string): Promise<ActionResponse> {
         return this.implementation.uninstall(version);
     }
 
-    public async enable?() {
+    public async enable?(): Promise<StatusResponse> {
         return this.implementation.enable();
     }
 
-    public async disable?() {
+    public async disable?(): Promise<StatusResponse> {
         return this.implementation.disable();
     }
 
     private async resolveAdapter() {
 
-        const operativeSystem = os.platform();
+        const operativeSystem: NodeJS.Platform = os.platform();
 
         switch (operativeSystem) {
             case 'win32':

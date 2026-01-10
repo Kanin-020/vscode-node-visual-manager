@@ -8,6 +8,13 @@ export type CurrentVersionResponse =
         error: unknown;
     };
 
+export type CurrentVersionListResponse =
+    | { nodeList: string[] }
+    | { error: Error };
+
+export type AvailableVersionListResponse =
+    | { nodeList: Version[] }
+    | { error: Error };
 
 export type ActionResponse =
     | {
@@ -20,15 +27,6 @@ export type ActionResponse =
         message?: never;
         id?: never;
     };
-
-export type CurrentVersionListResponse =
-    | { nodeList: string[] }
-    | { error: Error };
-
-
-export type AvailableVersionListResponse =
-    | { nodeList: Version[] }
-    | { error: Error };
 
 export type StatusResponse =
     | {
