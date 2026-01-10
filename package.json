@@ -12,7 +12,10 @@
   ],
   "icon": "resources/icon.png",
   "pricing": "Free",
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished",
+    "workspaceContains:.nvmrc"
+  ],
   "engines": {
     "vscode": "^1.86.0"
   },

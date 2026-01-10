@@ -3,6 +3,8 @@ import nvmWindows from '@infraestructure/nvm/nvm.windows';
 import os from 'node:os';
 import { nvmAdapter } from './nvm.adapter';
 import { ActionResponse, AvailableVersionListResponse, CurrentVersionListResponse, CurrentVersionResponse, StatusResponse } from '../types/response';
+import path from 'node:path';
+import fs from 'fs/promises';
 
 class NVM {
     private static instance: NVM;
@@ -49,6 +51,24 @@ class NVM {
 
     public async disable?(): Promise<StatusResponse> {
         return this.implementation.disable();
+    }
+
+    public async useVersionFromProject(projectPath: string): Promise<ActionResponse> {
+        const nvmrcPath = path.join(projectPath, '.nvmrc');
+
+        try {
+            const version = (await fs.readFile(nvmrcPath, 'utf-8')).trim();
+
+            await this.implementation.install(version);
+
+            return await this.implementation.useVersion(version);
+
+        } catch (err: any) {
+            if (err.code === 'ENOENT') {
+                return { error: '.nvmrc not found, using the current version of Node' };
+            }
+            return { error: err };
+        }
     }
 
     private async resolveAdapter() {
