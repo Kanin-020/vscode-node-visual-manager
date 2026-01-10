@@ -1,5 +1,5 @@
 import { nvmAdapter } from '@core/nvm.adapter';
-import { NvmResponse } from '@core/nvm.response.';
+import { ActionResponse, ListResponse } from '@core/nvm.response.';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as vscode from 'vscode';
@@ -16,7 +16,7 @@ const nvmLinux: nvmAdapter = {
     useVersion,
 };
 
-async function getInstalledVersionList() {
+async function getInstalledVersionList(): Promise<ListResponse> {
 
     try {
 
@@ -107,7 +107,7 @@ async function getAvailableVersionList() {
 
         const sortedVersionList = [...sortedLtsVersions, ...sortedCurrentVersions];
 
-        return { nodeRemoteList: sortedVersionList };
+        return { nodeList: sortedVersionList };
 
     } catch (error) {
         console.error(error);
@@ -144,7 +144,7 @@ async function getCurrentNodeVersion() {
 }
 
 
-async function install(version: string): Promise<NvmResponse> {
+async function install(version: string): Promise<ActionResponse> {
     try {
         const { stdout, stderr } = await execAsync(
             `bash -c "source ~/.nvm/nvm.sh && nvm cache clear && nvm install ${version}"`
@@ -160,7 +160,7 @@ async function install(version: string): Promise<NvmResponse> {
     }
 }
 
-async function uninstall(version: string): Promise<NvmResponse> {
+async function uninstall(version: string): Promise<ActionResponse> {
 
     try {
 
@@ -181,7 +181,7 @@ async function uninstall(version: string): Promise<NvmResponse> {
 
 
 
-async function useVersion(version: string): Promise<NvmResponse> {
+async function useVersion(version: string): Promise<ActionResponse> {
     try {
 
         const terminal = vscode.window.createTerminal({

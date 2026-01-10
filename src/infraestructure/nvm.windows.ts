@@ -1,5 +1,5 @@
 import { nvmAdapter } from '../core/nvm.adapter';
-import { NvmResponse } from '../core/nvm.response.';
+import { ListResponse, ActionResponse, StatusResponse } from '../core/nvm.response.';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -16,7 +16,7 @@ const nvmWindows: nvmAdapter = {
     disable,
 };
 
-async function getInstalledVersionList() {
+async function getInstalledVersionList(): Promise<ListResponse> {
 
     try {
 
@@ -39,7 +39,7 @@ async function getInstalledVersionList() {
 
 }
 
-async function getAvailableVersionList() {
+async function getAvailableVersionList(): Promise<ListResponse> {
 
     try {
 
@@ -114,7 +114,7 @@ async function getAvailableVersionList() {
 
         const sortedVersionList = [...ltsVersions, ...currentVersions, ...oldStableVersions, ...oldUnstableVersions];
 
-        return { nodeRemoteList: sortedVersionList };
+        return { nodeList: sortedVersionList };
 
     } catch (error) {
         console.error(error);
@@ -150,7 +150,7 @@ async function getCurrentNodeVersion() {
 
 }
 
-async function install(version: string): Promise<NvmResponse> {
+async function install(version: string): Promise<ActionResponse> {
 
     try {
 
@@ -180,7 +180,7 @@ async function install(version: string): Promise<NvmResponse> {
 
 }
 
-async function uninstall(version: string): Promise<NvmResponse> {
+async function uninstall(version: string): Promise<ActionResponse> {
 
     try {
 
@@ -199,7 +199,7 @@ async function uninstall(version: string): Promise<NvmResponse> {
 
 }
 
-async function useVersion(version: string): Promise<NvmResponse> {
+async function useVersion(version: string): Promise<ActionResponse> {
 
     try {
 
@@ -219,7 +219,7 @@ async function useVersion(version: string): Promise<NvmResponse> {
 }
 
 
-async function enable() {
+async function enable(): Promise<StatusResponse> {
 
     try {
 
@@ -238,7 +238,7 @@ async function enable() {
 
 }
 
-async function disable() {
+async function disable(): Promise<StatusResponse> {
 
     try {
 

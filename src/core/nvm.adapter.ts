@@ -1,15 +1,15 @@
-import { NvmResponse } from "./nvm.response.";
+import { ListResponse, ActionResponse } from "./nvm.response.";
 
 
 export interface nvmAdapter {
 
     getCurrentNodeVersion(): Promise<{ currentNodeVersion: string } | { error: unknown }>;
-    getInstalledVersionList(): Promise<{ nodeList: string[] } | { error: unknown }>;
-    getAvailableVersionList(): Promise<{ nodeRemoteList: any[] } | { error: unknown }>;
+    getInstalledVersionList(): Promise<ListResponse>;
+    getAvailableVersionList(): Promise<ListResponse>;
 
-    useVersion(version: string): Promise<NvmResponse>;
-    install(version: string): Promise<NvmResponse>;
-    uninstall(version: string): Promise<NvmResponse>;
+    useVersion(version: string): Promise<ActionResponse>;
+    install(version: string): Promise<ActionResponse>;
+    uninstall(version: string): Promise<ActionResponse>;
 
     enable?(): any;
     disable?(): any;
