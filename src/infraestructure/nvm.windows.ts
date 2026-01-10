@@ -1,7 +1,8 @@
 import { nvmAdapter } from '../core/nvm.adapter';
-import { ListResponse, ActionResponse, StatusResponse } from '../core/nvm.response.';
+import { CurrentVersionListResponse, ActionResponse, StatusResponse, AvailableVersionListResponse, CurrentVersionResponse } from '../core/nvm.response';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { Version } from './interfaces/version';
 
 const execAsync = promisify(exec);
 
@@ -16,30 +17,51 @@ const nvmWindows: nvmAdapter = {
     disable,
 };
 
-async function getInstalledVersionList(): Promise<ListResponse> {
+async function getCurrentNodeVersion(): Promise<CurrentVersionResponse> {
 
     try {
 
+        const { stdout, stderr } = await execAsync('nvm current');
+
+        if (stdout.includes('No current version')) {
+            return { currentNodeVersion: stdout };
+        }
+
+        let currentVersion: string = stdout.replace('v', '');
+
+        currentVersion = currentVersion.trim();
+
+        if (stderr) {
+            throw new Error(stderr);
+        }
+
+        return { currentNodeVersion: currentVersion };
+
+    } catch (error) {
+        console.error(error);
+        return { error: new Error(String(error)) };
+    }
+
+}
+
+async function getInstalledVersionList(): Promise<CurrentVersionListResponse> {
+    try {
         const { stdout, stderr } = await execAsync('nvm list');
 
         if (stderr) {
             throw new Error(stderr);
         }
 
-        const versionRegex = /\b\d+\.\d+\.\d+\b/g;
-
-        const versionList = stdout.match(versionRegex);
+        const versionList: string[] = stdout.match(/\b\d+\.\d+\.\d+\b/g) ?? [];
 
         return { nodeList: versionList };
-
     } catch (error) {
         console.error(error);
-        return { error };
+        return { error: new Error(String(error)) };
     }
-
 }
 
-async function getAvailableVersionList(): Promise<ListResponse> {
+async function getAvailableVersionList(): Promise<AvailableVersionListResponse> {
 
     try {
 
@@ -51,9 +73,9 @@ async function getAvailableVersionList(): Promise<ListResponse> {
 
         const lines = stdout.split('\n');
 
-        const filteredLines: any = [];
+        const filteredLines: string[] = [];
 
-        const availableVersionList: any = [];
+        const availableVersionList: Version[] = [];
 
         lines.forEach(line => {
             if (line.includes('|') && !line.includes('-') && !line.includes('CURRENT') && !line.includes('LTS') && !line.includes('OLD STABLE') && !line.includes('OLD UNSTABLE')) {
@@ -61,18 +83,18 @@ async function getAvailableVersionList(): Promise<ListResponse> {
             }
         });
 
-        filteredLines.forEach((line: any) => {
+        filteredLines.forEach((line: string) => {
 
-            const cleanLine = line.replace(/^\s*\|\s*|\s*\|\s*$/g, '');
+            const cleanLine: string = line.replace(/^\s*\|\s*|\s*\|\s*$/g, '');
 
-            const versions = cleanLine.split("|").map((version: any) => {
+            const versions = cleanLine.split("|").map((version: string) => {
                 return version.trim();
             });
 
-            const current = { version: versions[0], type: 'Current' };
-            const lts = { version: versions[1], type: 'LTS' };
-            const stable = { version: versions[2], type: 'Old Stable' };
-            const unstable = { version: versions[3], type: 'Old Unstable' };
+            const current: Version = { version: versions[0], type: 'Current' };
+            const lts: Version = { version: versions[1], type: 'LTS' };
+            const stable: Version = { version: versions[2], type: 'Old Stable' };
+            const unstable: Version = { version: versions[3], type: 'Old Unstable' };
 
             availableVersionList.push(current);
             availableVersionList.push(lts);
@@ -81,15 +103,15 @@ async function getAvailableVersionList(): Promise<ListResponse> {
 
         });
 
-        const currentVersions: any = [];
+        const currentVersions: Version[] = [];
 
-        const ltsVersions: any = [];
+        const ltsVersions: Version[] = [];
 
-        const oldStableVersions: any = [];
+        const oldStableVersions: Version[] = [];
 
-        const oldUnstableVersions: any = [];
+        const oldUnstableVersions: Version[] = [];
 
-        availableVersionList.forEach((version: any) => {
+        availableVersionList.forEach((version: Version) => {
 
             switch (version.type) {
                 case 'Current':
@@ -112,40 +134,13 @@ async function getAvailableVersionList(): Promise<ListResponse> {
 
         });
 
-        const sortedVersionList = [...ltsVersions, ...currentVersions, ...oldStableVersions, ...oldUnstableVersions];
+        const sortedVersionList: Version[] = [...ltsVersions, ...currentVersions, ...oldStableVersions, ...oldUnstableVersions];
 
         return { nodeList: sortedVersionList };
 
     } catch (error) {
         console.error(error);
-        return { error };
-    }
-
-}
-
-async function getCurrentNodeVersion() {
-
-    try {
-
-        const { stdout, stderr } = await execAsync('nvm current');
-
-        if (stdout.includes('No current version')) {
-            return { currentNodeVersion: stdout };
-        }
-
-        let currentVersion = stdout.replace('v', '');
-
-        currentVersion = currentVersion.trim();
-
-        if (stderr) {
-            throw new Error(stderr);
-        }
-
-        return { currentNodeVersion: currentVersion };
-
-    } catch (error) {
-        console.error(error);
-        return { error };
+        return { error: new Error(String(error)) };
     }
 
 }
@@ -160,7 +155,7 @@ async function install(version: string): Promise<ActionResponse> {
             throw new Error(stderr);
         }
 
-        let lines = stdout.split('\n');
+        let lines: string[] = stdout.split('\n');
 
         lines.shift();
         lines.shift();
@@ -169,13 +164,13 @@ async function install(version: string): Promise<ActionResponse> {
 
         lines.splice(index);
 
-        let message = lines.join('\n');
+        let message: string = lines.join('\n');
 
         return { message: message, id: version };
 
     } catch (error) {
         console.error(error);
-        return { error };
+        return { error: new Error(String(error)) };
     }
 
 }
@@ -194,7 +189,7 @@ async function uninstall(version: string): Promise<ActionResponse> {
 
     } catch (error) {
         console.error(error);
-        return { error };
+        return { error: new Error(String(error)) };
     }
 
 }
@@ -213,7 +208,7 @@ async function useVersion(version: string): Promise<ActionResponse> {
 
     } catch (error) {
         console.error(error);
-        return { error };
+        return { error: new Error(String(error)) };
     }
 
 }
@@ -233,7 +228,7 @@ async function enable(): Promise<StatusResponse> {
 
     } catch (error) {
         console.error(error);
-        return { error };
+        return { error: new Error(String(error)) };
     }
 
 }
@@ -252,7 +247,7 @@ async function disable(): Promise<StatusResponse> {
 
     } catch (error) {
         console.error(error);
-        return { error };
+        return { error: new Error(String(error)) };
     }
 
 }

@@ -1,16 +1,16 @@
-import { ListResponse, ActionResponse } from "./nvm.response.";
+import { CurrentVersionListResponse, ActionResponse, StatusResponse, AvailableVersionListResponse, CurrentVersionResponse } from "./nvm.response";
 
 
 export interface nvmAdapter {
 
-    getCurrentNodeVersion(): Promise<{ currentNodeVersion: string } | { error: unknown }>;
-    getInstalledVersionList(): Promise<ListResponse>;
-    getAvailableVersionList(): Promise<ListResponse>;
+    getCurrentNodeVersion(): Promise<CurrentVersionResponse>;
+    getInstalledVersionList(): Promise<CurrentVersionListResponse>;
+    getAvailableVersionList(): Promise<AvailableVersionListResponse>;
 
     useVersion(version: string): Promise<ActionResponse>;
     install(version: string): Promise<ActionResponse>;
     uninstall(version: string): Promise<ActionResponse>;
 
-    enable?(): any;
-    disable?(): any;
+    enable?(): Promise<StatusResponse>;
+    disable?(): Promise<StatusResponse>;
 }

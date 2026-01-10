@@ -1,3 +1,14 @@
+import { Version } from "@infraestructure/interfaces/version";
+
+export type CurrentVersionResponse =
+    | {
+        currentNodeVersion: string;
+    }
+    | {
+        error: unknown;
+    };
+
+
 export type ActionResponse =
     | {
         message: string;
@@ -10,8 +21,13 @@ export type ActionResponse =
         id?: never;
     };
 
-export type ListResponse =
+export type CurrentVersionListResponse =
     | { nodeList: string[] }
+    | { error: Error };
+
+
+export type AvailableVersionListResponse =
+    | { nodeList: Version[] }
     | { error: Error };
 
 export type StatusResponse =

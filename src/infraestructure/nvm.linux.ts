@@ -1,8 +1,9 @@
 import { nvmAdapter } from '@core/nvm.adapter';
-import { ActionResponse, ListResponse } from '@core/nvm.response.';
+import { ActionResponse, AvailableVersionListResponse, CurrentVersionListResponse, CurrentVersionResponse } from '@core/nvm.response';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as vscode from 'vscode';
+import { Version } from './interfaces/version';
 
 
 const execAsync = promisify(exec);
@@ -16,107 +17,7 @@ const nvmLinux: nvmAdapter = {
     useVersion,
 };
 
-async function getInstalledVersionList(): Promise<ListResponse> {
-
-    try {
-
-        const { stdout, stderr } = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm list"');
-
-        if (stderr) {
-            throw new Error(stderr);
-        }
-
-        const defaultIndex = stdout.indexOf("default");
-
-        const filteredList = defaultIndex !== -1 ? stdout.slice(0, defaultIndex + 1) : stdout;
-
-        const regex = /(\d+\.\d+\.\d+|system)/g;
-
-        const versionList = filteredList.match(regex);
-
-        const sortedVersionList = sortVersionList(versionList);
-
-        return { nodeList: sortedVersionList };
-
-    } catch (error) {
-        console.error(error);
-        return { error };
-    }
-
-}
-
-async function getAvailableVersionList() {
-
-    try {
-
-        const { stdout, stderr } = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm ls-remote"');
-
-        if (stderr) {
-            throw new Error(stderr);
-        }
-
-        const lines = stdout.split('\n');
-
-        const currentVersions: any = [];
-        const ltsVersions: any = [];
-
-        const versionRegex = /(\d+\.\d+\.\d+)/g;
-
-        const availableVersionList: any = [];
-
-        lines.forEach(line => {
-
-            let element;
-
-            if (line !== '') {
-
-                if (line.includes('LTS')) {
-                    const version = line.match(versionRegex);
-                    element = { version: version?.[0], type: 'LTS' };
-
-                } else {
-                    const version = line.match(versionRegex);
-                    element = { version: version?.[0], type: 'Current' };
-
-                }
-
-                availableVersionList.push(element);
-            }
-
-        });
-
-        availableVersionList.forEach((version: any) => {
-
-            switch (version.type) {
-                case 'Current':
-                    currentVersions.push(version);
-                    break;
-                case 'LTS':
-                    ltsVersions.push(version);
-                    break;
-                default:
-                    break;
-            }
-
-
-        });
-
-        const sortedLtsVersions = [...ltsVersions].sort((a, b) => sortRemoteVersionList(a.version, b.version));
-
-        const sortedCurrentVersions = [...currentVersions].sort((a, b) => sortRemoteVersionList(a.version, b.version));
-
-        const sortedVersionList = [...sortedLtsVersions, ...sortedCurrentVersions];
-
-        return { nodeList: sortedVersionList };
-
-    } catch (error) {
-        console.error(error);
-        return { error };
-    }
-
-}
-
-async function getCurrentNodeVersion() {
+async function getCurrentNodeVersion(): Promise<CurrentVersionResponse> {
 
     try {
 
@@ -143,6 +44,106 @@ async function getCurrentNodeVersion() {
 
 }
 
+
+async function getInstalledVersionList(): Promise<CurrentVersionListResponse> {
+
+    try {
+
+        const { stdout, stderr } = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm list"');
+
+        if (stderr) {
+            throw new Error(stderr);
+        }
+
+        const defaultIndex: number = stdout.indexOf("default");
+
+        const filteredList: string = defaultIndex !== -1 ? stdout.slice(0, defaultIndex + 1) : stdout;
+
+        const regex: RegExp = /(\d+\.\d+\.\d+|system)/g;
+
+        const versionList: string[] = filteredList.match(regex);
+
+        const sortedVersionList: string[] = sortVersionList(versionList);
+
+        return { nodeList: sortedVersionList };
+
+    } catch (error) {
+        console.error(error);
+        return { error };
+    }
+
+}
+
+async function getAvailableVersionList(): Promise<AvailableVersionListResponse> {
+
+    try {
+
+        const { stdout, stderr } = await execAsync('bash -c "source ~/.nvm/nvm.sh && nvm ls-remote"');
+
+        if (stderr) {
+            throw new Error(stderr);
+        }
+
+        const lines: string[] = stdout.split('\n');
+
+        const currentVersions: Version[] = [];
+        const ltsVersions: Version[] = [];
+
+        const versionRegex: RegExp = /(\d+\.\d+\.\d+)/g;
+
+        const availableVersionList: Version[] = [];
+
+        lines.forEach(line => {
+
+            let element: Version;
+
+            if (line !== '') {
+
+                if (line.includes('LTS')) {
+                    const version = line.match(versionRegex);
+                    element = { version: version?.[0], type: 'LTS' };
+
+                } else {
+                    const version = line.match(versionRegex);
+                    element = { version: version?.[0], type: 'Current' };
+
+                }
+
+                availableVersionList.push(element);
+            }
+
+        });
+
+        availableVersionList.forEach((version: Version) => {
+
+            switch (version.type) {
+                case 'Current':
+                    currentVersions.push(version);
+                    break;
+                case 'LTS':
+                    ltsVersions.push(version);
+                    break;
+                default:
+                    break;
+            }
+
+
+        });
+
+        const sortedLtsVersions: Version[] = [...ltsVersions].sort((a, b) => sortRemoteVersionList(a.version, b.version));
+
+        const sortedCurrentVersions: Version[] = [...currentVersions].sort((a, b) => sortRemoteVersionList(a.version, b.version));
+
+        const sortedVersionList: Version[] = [...sortedLtsVersions, ...sortedCurrentVersions];
+
+        return { nodeList: sortedVersionList };
+
+    } catch (error) {
+        console.error(error);
+        return { error };
+    }
+
+}
 
 async function install(version: string): Promise<ActionResponse> {
     try {
@@ -179,12 +180,10 @@ async function uninstall(version: string): Promise<ActionResponse> {
 
 }
 
-
-
 async function useVersion(version: string): Promise<ActionResponse> {
     try {
 
-        const terminal = vscode.window.createTerminal({
+        const terminal: vscode.Terminal = vscode.window.createTerminal({
             name: `Node ${version}`,
             shellPath: 'bash',
             shellArgs: [
@@ -205,10 +204,9 @@ async function useVersion(version: string): Promise<ActionResponse> {
     }
 }
 
-
-function sortRemoteVersionList(a: any, b: any) {
-    const aParts = a.split('.').map(Number);
-    const bParts = b.split('.').map(Number);
+function sortRemoteVersionList(versionA: string, versionB: string) {
+    const aParts = versionA.split('.').map(Number);
+    const bParts = versionB.split('.').map(Number);
 
     for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
         const aPart = aParts[i] || 0;
@@ -224,19 +222,19 @@ function sortRemoteVersionList(a: any, b: any) {
     return 0;
 }
 
-function sortVersionList(array: any) {
+function sortVersionList(array: string[]) {
 
-    return array.sort(function (a: any, b: any) {
-        if (a === "system") {
+    return array.sort(function (versionA: string, versionB: string) {
+        if (versionA === "system") {
             return 1;
         }
-        if (b === "system") {
+        if (versionB === "system") {
             return -1;
         }
-        if (a > b) {
+        if (versionA > versionB) {
             return -1;
         }
-        if (a < b) {
+        if (versionA < versionB) {
             return 1;
         }
         return 0;
