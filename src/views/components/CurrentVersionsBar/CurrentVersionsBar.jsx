@@ -15,8 +15,6 @@ const CurrentVersionsBar = () => {
   const [enableButtonState, setEnableButtonState] = useState(false);
 
   useEffect(() => {
-    verifyNvmIsInstalled();
-    getCurrentOS();
     getCurrentNodeVersion();
     getNodeVersionList();
 
@@ -114,6 +112,9 @@ const CurrentVersionsBar = () => {
   );
 };
 
+async function getCurrentNodeVersion() {
+  vscode.postMessage({ type: 'send-current' });
+}
 
 async function getNodeVersionList() {
   vscode.postMessage({ type: 'send-list' });

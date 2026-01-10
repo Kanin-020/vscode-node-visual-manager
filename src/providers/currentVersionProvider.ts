@@ -23,6 +23,13 @@ export class CurrentVersionProvider implements vscode.WebviewViewProvider {
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
 
+                case "send-current": {
+
+                    getCurrent(webviewView);
+
+                    break;
+                }
+
                 case "send-list": {
 
                     getList(webviewView);
@@ -73,16 +80,17 @@ export class CurrentVersionProvider implements vscode.WebviewViewProvider {
 
         const nonce = getNonce();
 
-        const cspPolicy = `
-            default-src 'none';
-            font-src ${webview.cspSource};
-            img-src ${webview.cspSource} https: data:;
-            style-src ${webview.cspSource} 'unsafe-inline';
-            script-src ${webview.cspSource} 'nonce-${nonce}';
-        `;
+        const cspPolicy = [
+            "default-src 'none'",
+            `font-src ${webview.cspSource}`,
+            `img-src ${webview.cspSource} https: data:`,
+            `style-src ${webview.cspSource} 'unsafe-inline'`,
+            `script-src ${webview.cspSource} 'nonce-${nonce}'`,
+        ].join('; ');
+
 
         return `<!DOCTYPE html>
-            <html lang="en"
+            <html lang="en">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -97,6 +105,29 @@ export class CurrentVersionProvider implements vscode.WebviewViewProvider {
             </body>
             </html>`;
 
+    }
+
+}
+
+async function getCurrent(webviewView: vscode.WebviewView) {
+
+    try {
+
+        const response = await nvm.getCurrentNodeVersion();
+
+        if ('error' in response) {
+            return;
+        }
+
+        if (response.currentNodeVersion) {
+
+            webviewView.webview.postMessage({ type: 'receive-current', data: response.currentNodeVersion });
+
+            return response.currentNodeVersion;
+        }
+
+    } catch (error) {
+        console.error(error);
     }
 
 }
