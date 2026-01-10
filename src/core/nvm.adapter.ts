@@ -1,4 +1,4 @@
-import { NvmResponse } from "./nvmResponse";
+import { NvmResponse } from "./nvm.response.";
 
 
 export interface nvmAdapter {

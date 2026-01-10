@@ -1,7 +1,8 @@
+import { nvmAdapter } from '@core/nvm.adapter';
+import { NvmResponse } from '@core/nvm.response.';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { NvmResponse } from '@interfaces/nvmResponse';
-import { nvmAdapter } from '@interfaces/nvm';
+
 
 const execAsync = promisify(exec);
 

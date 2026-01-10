@@ -1,7 +1,7 @@
+import nvmLinux from '@infraestructure/nvm.linux';
+import nvmWindows from '@infraestructure/nvm.windows';
 import os from 'node:os';
-import nvmWindows from '@model/nvmWindows';
-import nvmLinux from '@model/nvmLinux';
-import { nvmAdapter } from '@interfaces/nvm';
+import { nvmAdapter } from './nvm.adapter';
 
 class NVM {
     private static instance: NVM;

@@ -18,13 +18,10 @@ const extensionConfig = {
   resolve: {
     extensions: ['.ts', '.js'],
     alias: {
-      '@assets': path.resolve(__dirname, 'src/assets'),
-      '@entities': path.resolve(__dirname, 'src/entities'),
-      '@interfaces': path.resolve(__dirname, 'src/interfaces'),
-      '@model': path.resolve(__dirname, 'src/model'),
-      '@providers': path.resolve(__dirname, 'src/providers'),
-      '@styles': path.resolve(__dirname, 'src/styles'),
-      '@views': path.resolve(__dirname, 'src/views'),
+      '@core': path.resolve(__dirname, 'src/core'),
+      '@infraestructure': path.resolve(__dirname, 'src/infraestructure'),
+      '@vscode': path.resolve(__dirname, 'src/vscode'),
+      '@web': path.resolve(__dirname, 'src/web'),
     }
   },
   module: {

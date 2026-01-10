@@ -8,13 +8,10 @@
 		"sourceMap": true,
 		"rootDir": "src",
 		"paths": {
-			"@assets/*": ["./src/assets/*"],
-			"@entities/*": ["./src/entities/*"],
-			"@interfaces/*": ["./src/interfaces/*"],
-			"@model/*": ["./src/model/*"],
-			"@providers/*": ["./src/providers/*"],
-			"@styles/*": ["./src/styles/*"],
-			"@views/*": ["./src/views/*"],
+			"@core/*": ["./src/core/*"],
+			"@infraestructure/*": ["./src/infraestructure/*"],
+			"@vscode/*": ["./src/vscode/*"],
+			"@web/*": ["./src/web/*"],
    		}	
 	}
 }
