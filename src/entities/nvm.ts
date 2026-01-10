@@ -7,17 +7,50 @@ class NVM {
     private static instance: NVM;
     private implementation: nvmAdapter;
 
-    constructor() { }
-
-    public static async getInstance(): Promise<NVM> {
-        if (!NVM.instance) {
-            NVM.instance = new NVM();
-            await NVM.instance.init();
-        }
-        return NVM.instance;
+    private constructor() {
+        this.resolveAdapter();
     }
 
-    async init() {
+    static getInstance(): NVM {
+        if (!this.instance) {
+            this.instance = new NVM();
+        }
+        return this.instance;
+    }
+
+    public async getCurrentNodeVersion() {
+        return this.implementation.getCurrentNodeVersion();
+    }
+
+    public async getInstalledVersionList() {
+        return this.implementation.getInstalledVersionList();
+    }
+
+    public async getAvailableVersionList() {
+        return this.implementation.getAvailableVersionList();
+    }
+
+    public async useVersion(version: string) {
+        return this.implementation.useVersion(version);
+    }
+
+    public async install(version: string) {
+        return this.implementation.install(version);
+    }
+
+    public async uninstall(version: string) {
+        return this.implementation.uninstall(version);
+    }
+
+    public async enable?() {
+        return this.implementation.enable();
+    }
+
+    public async disable?() {
+        return this.implementation.disable();
+    }
+
+    private async resolveAdapter() {
 
         const operativeSystem = os.platform();
 
@@ -34,43 +67,6 @@ class NVM {
         }
     }
 
-    public get currentNodeVersion() {
-        return this.implementation.currentNodeVersion;
-    }
-
-    public getInstalledVersionList() {
-        return this.implementation.getInstalledVersionList();
-    }
-
-    public getAvailableVersionList() {
-        return this.implementation.getAvailableVersionList();
-    }
-
-    public useVersion(version: string) {
-        return this.implementation.useVersion(version);
-    }
-
-    public install(version: string) {
-        return this.implementation.install(version);
-    }
-
-    public uninstall(version: string) {
-        return this.implementation.uninstall(version);
-    }
-
-    public enable?() {
-        return this.implementation.enable();
-    }
-
-    public disable?() {
-        return this.implementation.disable();
-    }
 }
 
-const nvm = (async () => {
-    const instance = new NVM();
-    await instance.init();
-    return instance;
-})();
-
-export default nvm;
+export default NVM.getInstance();

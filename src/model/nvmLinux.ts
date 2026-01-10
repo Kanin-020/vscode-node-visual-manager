@@ -6,10 +6,9 @@ import { nvmAdapter } from '@interfaces/nvm';
 const execAsync = promisify(exec);
 
 const nvmLinux: nvmAdapter = {
-    currentNodeVersion: '10',
+    getCurrentNodeVersion,
     getInstalledVersionList,
     getAvailableVersionList,
-    getCurrentNodeVersion,
     install,
     uninstall,
     useVersion,

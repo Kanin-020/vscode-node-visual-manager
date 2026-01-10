@@ -3,11 +3,9 @@ import { NvmResponse } from "./nvmResponse";
 
 export interface nvmAdapter {
 
-    currentNodeVersion: string,
-
+    getCurrentNodeVersion(): Promise<{ currentNodeVersion: string } | { error: unknown }>;
     getInstalledVersionList(): Promise<{ nodeList: string[] } | { error: unknown }>;
     getAvailableVersionList(): Promise<{ nodeRemoteList: any[] } | { error: unknown }>;
-    getCurrentNodeVersion(): Promise<{ currentNodeVersion: string } | { error: unknown }>;
 
     useVersion(version: string): Promise<NvmResponse>;
     install(version: string): Promise<NvmResponse>;

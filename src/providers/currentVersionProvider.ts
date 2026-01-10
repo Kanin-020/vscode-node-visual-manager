@@ -22,7 +22,7 @@ export class CurrentVersionProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
-                
+
                 case "send-list": {
 
                     getList(webviewView);
@@ -105,15 +105,14 @@ async function getList(webviewView: vscode.WebviewView) {
 
     try {
 
-        const response = (await nvm).getInstalledVersionList();
+        const response = await nvm.getInstalledVersionList();
 
-        if (response && response.error) {
+        if ('error' in response) {
             vscode.window.showErrorMessage('Could not get node version list.');
+            return;
         }
 
-        if (response && response.nodeList) {
-            webviewView.webview.postMessage({ type: 'receive-list', data: response.nodeList });
-        }
+        webviewView.webview.postMessage({ type: 'receive-list', data: response.nodeList });
 
 
     } catch (error) {
@@ -125,28 +124,28 @@ async function getList(webviewView: vscode.WebviewView) {
 
 async function useVersion(version: string, webviewView: vscode.WebviewView) {
 
-    const response = (await nvm).useVersion(version);
+    const response = await nvm.useVersion(version);
 
-    if (response.error) {
+    if ('error' in response) {
         vscode.window.showErrorMessage('Could not set version to: ' + version);
+        return;
+
     }
 
-    if (response.message && response.id) {
+    vscode.window.showInformationMessage(response.message);
 
-        vscode.window.showInformationMessage(response.message);
+    webviewView.webview.postMessage({ type: 'receive-use', data: response.id });
 
-        webviewView.webview.postMessage({ type: 'receive-use', data: response.id });
-    }
 
 }
 
 async function uninstallVersion(version: string, webviewView: vscode.WebviewView) {
 
-    const response = (await nvm).uninstall(version);
+    const response = await nvm.uninstall(version);
 
-
-    if (response.error) {
+    if ('error' in response) {
         vscode.window.showErrorMessage('Could not uninstall the selected version.');
+        return;
     }
 
     if (response.message && response.id) {
@@ -161,12 +160,13 @@ async function uninstallVersion(version: string, webviewView: vscode.WebviewView
 
 async function enable(webviewView: vscode.WebviewView) {
 
-    const response = (await nvm).enable();
+    const response = await nvm.enable();
 
-    const currentResponse = (await nvm).currentNodeVersion;
+    const currentResponse = await nvm.getCurrentNodeVersion();
 
-    if (response.error) {
+    if ('error' in response || 'error' in currentResponse) {
         vscode.window.showInformationMessage('NVM could not be enabled.');
+        return;
     }
 
     if (response.message && currentResponse.currentNodeVersion) {
@@ -181,12 +181,13 @@ async function enable(webviewView: vscode.WebviewView) {
 
 async function disable(webviewView: vscode.WebviewView) {
 
-    const response = (await nvm).disable();
+    const response = await nvm.disable();
 
-    const currentResponse = (await nvm).currentNodeVersion;
+    const currentResponse = await nvm.getCurrentNodeVersion();
 
-    if (response.error) {
+    if ('error' in response || 'error' in currentResponse) {
         vscode.window.showInformationMessage('NVM could not be disabled.');
+        return;
     }
 
     if (response.message && currentResponse.currentNodeVersion) {

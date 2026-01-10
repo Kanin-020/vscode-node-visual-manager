@@ -6,10 +6,9 @@ import { promisify } from 'util';
 const execAsync = promisify(exec);
 
 const nvmWindows: nvmAdapter = {
-    currentNodeVersion: '10',
+    getCurrentNodeVersion,
     getInstalledVersionList,
     getAvailableVersionList,
-    getCurrentNodeVersion,
     install,
     uninstall,
     useVersion,

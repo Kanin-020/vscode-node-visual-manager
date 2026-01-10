@@ -79,10 +79,11 @@ export class AvailableVersionProvider implements vscode.WebviewViewProvider {
 async function getRemoteList(webviewView: vscode.WebviewView) {
     try {
 
-        const response = (await nvm).getAvailableVersionList();
+        const response = await nvm.getAvailableVersionList();
 
-        if (response.error) {
+        if ('error' in response) {
             vscode.window.showErrorMessage('Could not get available node version list. Verify your internet connection.');
+            return;
         }
 
         if (response.nodeRemoteList) {
@@ -99,10 +100,11 @@ async function installVersion(version: string, webviewView: vscode.WebviewView) 
 
         vscode.window.showInformationMessage('Installing node version: ' + version);
 
-        const response = (await nvm).install(version);
+        const response = await nvm.install(version);
 
-        if (response.error) {
+        if ('error' in response) {
             vscode.window.showErrorMessage('Could not install the requested version.');
+            return;
         }
 
         if (response.message) {
