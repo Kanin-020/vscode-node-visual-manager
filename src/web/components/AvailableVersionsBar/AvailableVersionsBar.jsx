@@ -36,12 +36,17 @@ const AvailableVersionsBar = () => {
     vscode.postMessage({ type: 'send-install', data: version });
   }, []);
 
+  const installNodeFromSource = useCallback(async (version) => {
+    vscode.postMessage({ type: 'send-install-source', data: version });
+  }, []);
+
   const renderedVersions = useMemo(() => {
     return filteredVersions.map((item, index) => (
       <AvailableVersionItem
         key={index}
         item={item}
         installNodeVersion={installNodeVersion}
+        installNodeFromSource={installNodeFromSource}
       />
     ));
   }, [filteredVersions, installNodeVersion]);

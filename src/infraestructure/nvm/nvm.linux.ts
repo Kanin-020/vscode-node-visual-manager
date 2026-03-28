@@ -61,7 +61,7 @@ async function getInstalledVersionList(): Promise<CurrentVersionListResponse> {
 
         const regex: RegExp = /(\d+\.\d+\.\d+|system)/g;
 
-        const versionList: string[] = filteredList.match(regex);
+        const versionList: string[] = filteredList.match(regex) ?? [];
 
         const sortedVersionList: string[] = sortVersionList(versionList);
 
@@ -69,7 +69,7 @@ async function getInstalledVersionList(): Promise<CurrentVersionListResponse> {
 
     } catch (error) {
         console.error(error);
-        return { error };
+        return { error: new Error(String(error)) };
     }
 
 }
@@ -100,11 +100,16 @@ async function getAvailableVersionList(): Promise<AvailableVersionListResponse> 
             if (line !== '') {
 
                 if (line.includes('LTS')) {
-                    const version = line.match(versionRegex);
+                    const match = line.match(versionRegex);
+                    const version = match ? match[0] : 'unknown';
+
+                    element = { version, type: 'LTS' };
+
                     element = { version: version?.[0], type: 'LTS' };
 
                 } else {
-                    const version = line.match(versionRegex);
+                    const match = line.match(versionRegex);
+                    const version = match ? match[0] : 'unknown';
                     element = { version: version?.[0], type: 'Current' };
 
                 }
@@ -140,7 +145,7 @@ async function getAvailableVersionList(): Promise<AvailableVersionListResponse> 
 
     } catch (error) {
         console.error(error);
-        return { error };
+        return { error: new Error(String(error)) };
     }
 
 }
@@ -180,25 +185,28 @@ async function uninstall(version: string): Promise<ActionResponse> {
 
 }
 
+const terminals: Map<string, vscode.Terminal> = new Map();
+
 async function useVersion(version: string): Promise<ActionResponse> {
     try {
+        let terminal = terminals.get(version);
 
-        const terminal: vscode.Terminal = vscode.window.createTerminal({
-            name: `Node ${version}`,
-            shellPath: 'bash',
-            shellArgs: [
-                '-c',
-                `source ~/.nvm/nvm.sh && nvm use ${version} && exec bash`
-            ]
-        });
+        if (!terminal) {
+            terminal = vscode.window.createTerminal({
+                name: `Node ${version}`,
+                shellPath: 'bash',
+                shellArgs: ['-c', `source ~/.nvm/nvm.sh && nvm use ${version} && exec bash`]
+            });
+            terminals.set(version, terminal);
+        }
 
-        terminal.show();
+        terminal.show(true); // Trae la terminal al frente
+        terminal.sendText(`source ~/.nvm/nvm.sh && nvm use ${version}`, true);
 
         return {
             message: `Now using node ${version}`,
             id: version
         };
-
     } catch (error) {
         return { error };
     }
