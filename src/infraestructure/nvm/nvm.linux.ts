@@ -1,21 +1,24 @@
-import { nvmAdapter } from '@core/nvm/nvm.adapter';
+import { nvmPort } from '@core/nvm/nvm.port';
 import { ActionResponse, AvailableVersionListResponse, CurrentVersionListResponse, CurrentVersionResponse } from '@core/types/response';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as vscode from 'vscode';
 import { Version } from '../types/version';
+import path from 'node:path';
+import fs from 'fs/promises';
 
 const execAsync = promisify(exec);
 
 const terminals: Map<string, vscode.Terminal> = new Map();
 
-const nvmLinux: nvmAdapter = {
+const nvmLinux: nvmPort = {
     getCurrentNodeVersion,
     getInstalledVersionList,
     getAvailableVersionList,
+    useVersion,
+    useVersionFromProject,
     install,
     uninstall,
-    useVersion,
 };
 
 async function getCurrentNodeVersion(): Promise<CurrentVersionResponse> {
@@ -188,6 +191,7 @@ async function uninstall(version: string): Promise<ActionResponse> {
 
 }
 
+//TODO
 async function useVersion(version: string): Promise<ActionResponse> {
     try {
         let terminal = terminals.get(version);
@@ -210,6 +214,24 @@ async function useVersion(version: string): Promise<ActionResponse> {
         };
     } catch (error) {
         return { error };
+    }
+}
+
+async function useVersionFromProject(projectPath: string): Promise<ActionResponse> {
+    const nvmrcPath = path.join(projectPath, '.nvmrc');
+
+    try {
+        const version = (await fs.readFile(nvmrcPath, 'utf-8')).trim();
+
+        await install(version);
+
+        return useVersion(version);
+
+    } catch (err: any) {
+        if (err.code === 'ENOENT') {
+            return { error: '.nvmrc not found, using the current version of Node' };
+        }
+        return { error: err };
     }
 }
 
