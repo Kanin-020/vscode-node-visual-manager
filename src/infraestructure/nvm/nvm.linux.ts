@@ -5,8 +5,9 @@ import { promisify } from 'util';
 import * as vscode from 'vscode';
 import { Version } from '../types/version';
 
-
 const execAsync = promisify(exec);
+
+const terminals: Map<string, vscode.Terminal> = new Map();
 
 const nvmLinux: nvmAdapter = {
     getCurrentNodeVersion,
@@ -93,6 +94,8 @@ async function getAvailableVersionList(): Promise<AvailableVersionListResponse> 
 
         const availableVersionList: Version[] = [];
 
+        const noVersionAvailable: string = "N/A";
+
         lines.forEach(line => {
 
             let element: Version;
@@ -101,15 +104,15 @@ async function getAvailableVersionList(): Promise<AvailableVersionListResponse> 
 
                 if (line.includes('LTS')) {
                     const match = line.match(versionRegex);
-                    const version = match ? match[0] : 'unknown';
+                    const version = match ?? noVersionAvailable;
 
-                    element = { version, type: 'LTS' };
 
                     element = { version: version?.[0], type: 'LTS' };
 
                 } else {
                     const match = line.match(versionRegex);
-                    const version = match ? match[0] : 'unknown';
+                    const version = match ?? noVersionAvailable;
+
                     element = { version: version?.[0], type: 'Current' };
 
                 }
@@ -185,8 +188,6 @@ async function uninstall(version: string): Promise<ActionResponse> {
 
 }
 
-const terminals: Map<string, vscode.Terminal> = new Map();
-
 async function useVersion(version: string): Promise<ActionResponse> {
     try {
         let terminal = terminals.get(version);
@@ -200,7 +201,7 @@ async function useVersion(version: string): Promise<ActionResponse> {
             terminals.set(version, terminal);
         }
 
-        terminal.show(true); // Trae la terminal al frente
+        terminal.show(true);
         terminal.sendText(`source ~/.nvm/nvm.sh && nvm use ${version}`, true);
 
         return {
