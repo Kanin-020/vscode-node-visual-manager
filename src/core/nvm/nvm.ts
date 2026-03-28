@@ -8,7 +8,7 @@ import fs from 'fs/promises';
 
 class NVM {
     private static instance: NVM;
-    private implementation: nvmAdapter;
+    private implementation!: nvmAdapter;
 
     private constructor() {
         this.resolveAdapter();
@@ -46,11 +46,11 @@ class NVM {
     }
 
     public async enable?(): Promise<StatusResponse> {
-        return this.implementation.enable();
+        return this.implementation.enable?.();
     }
 
     public async disable?(): Promise<StatusResponse> {
-        return this.implementation.disable();
+        return this.implementation.disable?.();
     }
 
     public async useVersionFromProject(projectPath: string): Promise<ActionResponse> {

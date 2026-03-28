@@ -34,4 +34,6 @@ export type StatusResponse =
     }
     | {
         error: unknown;
-    };
+    }
+    | undefined;
+

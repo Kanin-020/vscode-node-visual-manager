@@ -199,37 +199,36 @@ async function uninstallVersion(version: string, webviewView: vscode.WebviewView
 
 async function enable(webviewView: vscode.WebviewView) {
 
-    const response = await nvm.enable();
-
+    const response = await nvm.enable?.();
     const currentResponse = await nvm.getCurrentNodeVersion();
 
-    if ('error' in response || 'error' in currentResponse) {
+    if (!response || 'error' in response || 'error' in currentResponse) {
         vscode.window.showInformationMessage('NVM could not be enabled.');
         return;
     }
 
-    if (response.message && currentResponse.currentNodeVersion) {
-
+    if ('message' in response && currentResponse.currentNodeVersion) {
         vscode.window.showInformationMessage(response.message);
 
-        webviewView.webview.postMessage({ type: 'receive-on', data: currentResponse.currentNodeVersion });
-
+        webviewView.webview.postMessage({
+            type: 'receive-on',
+            data: currentResponse.currentNodeVersion
+        });
     }
-
 }
 
 async function disable(webviewView: vscode.WebviewView) {
 
-    const response = await nvm.disable();
+    const response = await nvm.disable?.();
 
     const currentResponse = await nvm.getCurrentNodeVersion();
 
-    if ('error' in response || 'error' in currentResponse) {
+    if (!response || 'error' in response || 'error' in currentResponse) {
         vscode.window.showInformationMessage('NVM could not be disabled.');
         return;
     }
 
-    if (response.message && currentResponse.currentNodeVersion) {
+    if ('message' in response && currentResponse.currentNodeVersion) {
 
         vscode.window.showInformationMessage(response.message);
 
