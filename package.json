@@ -61,11 +61,13 @@
     "views": {
       "node-visual-manager-sidebar-view": [
         {
+          "icon": "",
           "type": "webview",
           "id": "node-visual-manager-sidebar-current",
-          "name": "Node Visual Manager"
+          "name": "Installed Node Versions"
         },
         {
+          "icon": "",
           "type": "webview",
           "id": "node-visual-manager-sidebar-available",
           "name": "Available Node Versions"
@@ -84,6 +86,14 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "vscode-test"
+  },
+  "dependencies": {
+    "@vscode/codicons": "^0.0.45",
+    "node-fetch": "^3.3.2",
+    "process": "^0.11.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "window-or-global": "^1.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.7",
@@ -109,14 +119,6 @@
     "typescript": "^5.5.2",
     "webpack": "^5.92.1",
     "webpack-cli": "^5.1.4"
-  },
-  "dependencies": {
-    "@vscode/codicons": "^0.0.35",
-    "node-fetch": "^3.3.2",
-    "process": "^0.11.10",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "window-or-global": "^1.0.1"
   },
   "license": "SEE LICENSE IN LICENSE.txt",
   "bugs": {

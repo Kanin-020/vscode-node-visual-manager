@@ -31,6 +31,10 @@ export class AvailableVersionProvider implements vscode.WebviewViewProvider {
                     installVersion(data.data, webviewView);
                     break;
                 }
+                case 'send-install-source': {
+                    installFromSource(data.data, webviewView);
+                    break;
+                }
 
             }
         });
@@ -116,4 +120,29 @@ async function installVersion(version: string, webviewView: vscode.WebviewView) 
     } catch (error) {
         console.error(error);
     }
+}
+
+async function installFromSource(version: string, webviewView: vscode.WebviewView) {
+    try {
+
+        vscode.window.showInformationMessage('Installing node version from source: ' + version);
+
+        const response = await nvm.installFromSource(version);
+
+        if ('error' in response) {
+            vscode.window.showErrorMessage('Could not install the requested version.');
+            return;
+        }
+
+        if (response.message) {
+            vscode.window.showInformationMessage(response.message);
+            vscode.window.showInformationMessage(`Complete node v${version} installed successfully.`);
+            webviewView.webview.postMessage({ type: 'receive-install', data: response.id });
+
+            await vscode.commands.executeCommand('workbench.action.webview.reloadWebviewAction');
+        }
+    } catch (error) {
+        console.error(error);
+    }
+
 }

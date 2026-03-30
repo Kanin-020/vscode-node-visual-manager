@@ -18,6 +18,7 @@ const nvmLinux: nvmPort = {
     useVersion,
     useVersionFromProject,
     install,
+    installFromSource,
     uninstall,
 };
 
@@ -170,6 +171,11 @@ async function install(version: string): Promise<ActionResponse> {
     } catch (error) {
         return { error };
     }
+}
+
+//TODOs
+async function installFromSource(version: string): Promise<ActionResponse> {
+    return { message: "message", id: version };
 }
 
 async function uninstall(version: string): Promise<ActionResponse> {

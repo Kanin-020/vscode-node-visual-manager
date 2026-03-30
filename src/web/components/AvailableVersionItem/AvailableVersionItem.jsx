@@ -13,7 +13,7 @@ const AvailableVersionItem = ({ item, installNodeVersion, installNodeFromSource 
                         <i className="codicon codicon-cloud-download"></i>
                     </a>
                     <a title="Install from Source" className="action" onClick={() => installNodeFromSource(item.version)}>
-                        <i className="codicon codicon-cloud-download"></i>
+                        <i className="codicon codicon-desktop-download"></i>
                     </a>
                 </div>
             </div>

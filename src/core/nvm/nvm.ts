@@ -5,7 +5,7 @@ import os from 'node:os';
 
 import { ActionResponse, AvailableVersionListResponse, CurrentVersionListResponse, CurrentVersionResponse, StatusResponse } from '../types/response';
 
-class NVM {
+class NVM implements nvmPort {
     private static instance: NVM;
     private implementation!: nvmPort;
 
@@ -38,6 +38,10 @@ class NVM {
 
     public async install(version: string): Promise<ActionResponse> {
         return this.implementation.install(version);
+    }
+
+    public async installFromSource(version: string): Promise<ActionResponse> {
+        return this.implementation.installFromSource(version);
     }
 
     public async uninstall(version: string): Promise<ActionResponse> {

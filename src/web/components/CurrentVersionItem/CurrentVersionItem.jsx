@@ -13,10 +13,10 @@ const CurrentVersionItem = ({ version, currentVersionState, useNodeVersion, unin
                     onClick={toggleNVMState}
                 >Current</span>
                 <div className="options">
-                    <a className="action" onClick={() => useNodeVersion(version)}>
+                    <a title="Use version" className="action" onClick={() => useNodeVersion(version)}>
                         <i className="codicon codicon-run"></i>
                     </a>
-                    <a className="action" onClick={() => uninstallNodeVersion(version)}>
+                    <a title="Uninstall" className="action" onClick={() => uninstallNodeVersion(version)}>
                         <i className="codicon codicon-close"></i>
                     </a>
                 </div>
