@@ -9,8 +9,6 @@ import fs from 'fs/promises';
 
 const execAsync = promisify(exec);
 
-const terminals: Map<string, vscode.Terminal> = new Map();
-
 const nvmLinux: nvmPort = {
     getCurrentNodeVersion,
     getInstalledVersionList,
@@ -159,13 +157,18 @@ async function getAvailableVersionList(): Promise<AvailableVersionListResponse> 
 
 async function install(version: string): Promise<ActionResponse> {
     try {
-        const { stdout, stderr } = await execAsync(
-            `bash -c "source ~/.nvm/nvm.sh && nvm cache clear && nvm install ${version}"`
+
+        const { stdout: lsOut } = await execAsync(
+            `bash -c "source ~/.nvm/nvm.sh && nvm ls ${version}"`
         );
 
-        if (!stderr.includes('Checksums matched!')) {
-            throw new Error(stderr);
+        if (lsOut.includes(version)) {
+            return { message: `Node ${version} ya está instalada`, id: version };
         }
+
+        const { stdout } = await execAsync(
+            `bash -c "source ~/.nvm/nvm.sh && nvm install ${version}"`
+        );
 
         return { message: stdout, id: version };
     } catch (error) {
@@ -173,9 +176,25 @@ async function install(version: string): Promise<ActionResponse> {
     }
 }
 
-//TODOs
 async function installFromSource(version: string): Promise<ActionResponse> {
-    return { message: "message", id: version };
+    try {
+        const { stdout: lsOut } = await execAsync(
+            `bash -c "source ~/.nvm/nvm.sh && nvm ls ${version}"`
+        );
+
+        if (lsOut.includes(version)) {
+            return { message: `Node ${version} ya está instalada`, id: version };
+        }
+
+        const { stdout } = await execAsync(
+            `bash -c "source ~/.nvm/nvm.sh && nvm install -s ${version}"`
+        );
+
+
+        return { message: stdout, id: version };
+    } catch (error) {
+        return { error };
+    }
 }
 
 async function uninstall(version: string): Promise<ActionResponse> {
@@ -197,22 +216,30 @@ async function uninstall(version: string): Promise<ActionResponse> {
 
 }
 
-//TODO
 async function useVersion(version: string): Promise<ActionResponse> {
     try {
-        let terminal = terminals.get(version);
+
+        const terminalName = `Node ${version}`;
+
+        let terminal = vscode.window.terminals.find(
+            t => t.name === terminalName
+        );
 
         if (!terminal) {
             terminal = vscode.window.createTerminal({
-                name: `Node ${version}`,
+                name: terminalName,
                 shellPath: 'bash',
-                shellArgs: ['-c', `source ~/.nvm/nvm.sh && nvm use ${version} && exec bash`]
+                shellArgs: [
+                    '-c',
+                    `source ~/.nvm/nvm.sh && nvm use ${version} && clear && exec bash`
+                ]
             });
-            terminals.set(version, terminal);
+        } else {
+            terminal.sendText(`source ~/.nvm/nvm.sh && nvm use ${version}`);
+            terminal.sendText('clear');
         }
 
-        terminal.show(true);
-        terminal.sendText(`source ~/.nvm/nvm.sh && nvm use ${version}`, true);
+        terminal.show(false);
 
         return {
             message: `Now using node ${version}`,
