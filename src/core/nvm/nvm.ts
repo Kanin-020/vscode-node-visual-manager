@@ -56,6 +56,18 @@ class NVM implements nvmPort {
         return this.implementation.disable?.();
     }
 
+    public canEnable(): boolean {
+        return typeof (this.implementation as any).enable === 'function';
+    }
+
+    public canDisable(): boolean {
+        return typeof (this.implementation as any).disable === 'function';
+    }
+
+    public canInstallFromSource(): boolean {
+        return typeof (this.implementation as any).installFromSource === 'function';
+    }
+
     public async useVersionFromProject(projectPath: string): Promise<ActionResponse> {
         return this.implementation.useVersionFromProject(projectPath);
     }

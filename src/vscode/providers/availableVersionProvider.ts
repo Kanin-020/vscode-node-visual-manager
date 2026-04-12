@@ -23,6 +23,13 @@ export class AvailableVersionProvider implements vscode.WebviewViewProvider {
         webviewView.webview.onDidReceiveMessage(async (data) => {
 
             switch (data.type) {
+                case 'send-ui-state': {
+                    webviewView.webview.postMessage({ type: 'receive-ui-state', data: getUiState() });
+                    break;
+                } case 'send-ui-state': {
+                    webviewView.webview.postMessage({ type: 'receive-ui-state', data: getUiState() });
+                    break;
+                }
                 case 'send-list-available': {
                     getRemoteList(webviewView);
                     break;
@@ -144,4 +151,10 @@ async function installFromSource(version: string, webviewView: vscode.WebviewVie
         console.error(error);
     }
 
+}
+
+function getUiState() {
+    return {
+        canInstallFromSource: nvm.canInstallFromSource(),
+    };
 }

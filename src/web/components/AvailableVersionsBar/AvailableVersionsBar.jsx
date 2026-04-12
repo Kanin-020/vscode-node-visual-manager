@@ -10,14 +10,18 @@ const vscode = acquireVsCodeApi();
 const AvailableVersionsBar = () => {
   const [nodeVersions, setNodeVersions] = useState([]);
   const [filteredVersions, setFilteredVersions] = useState([]);
+  const [canInstallFromSource, setCanInstallFromSource] = useState(false);
 
   useEffect(() => {
     getNodeVersionAvailableList();
+    getUIState();
 
     const handleMessage = (event) => {
       const message = event.data;
       if (message.type === 'receive-list-available') {
         setNodeVersions(message.data);
+      } else if (message.type === 'receive-ui-state') {
+        setCanInstallFromSource(message.data.canInstallFromSource);
       }
     };
 
@@ -47,9 +51,10 @@ const AvailableVersionsBar = () => {
         item={item}
         installNodeVersion={installNodeVersion}
         installNodeFromSource={installNodeFromSource}
+        canInstallFromSource={canInstallFromSource}
       />
     ));
-  }, [filteredVersions, installNodeVersion]);
+  }, [filteredVersions, installNodeVersion, canInstallFromSource]);
 
   return (
     <div className="container">
@@ -66,6 +71,10 @@ const AvailableVersionsBar = () => {
 
 async function getNodeVersionAvailableList() {
   vscode.postMessage({ type: 'send-list-available' });
+}
+
+async function getUIState() {
+  vscode.postMessage({ type: 'send-ui-state' });
 }
 
 export default React.memo(AvailableVersionsBar);

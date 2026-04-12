@@ -2,7 +2,7 @@ import './AvailableVersionItem.css';
 
 import React from 'react';
 
-const AvailableVersionItem = ({ item, installNodeVersion, installNodeFromSource }) => {
+const AvailableVersionItem = ({ item, installNodeVersion, installNodeFromSource, canInstallFromSource }) => {
     return (
         <div className="node-item">
             <div className="node-item-content">
@@ -12,9 +12,11 @@ const AvailableVersionItem = ({ item, installNodeVersion, installNodeFromSource 
                     <a title="Install" className="action" onClick={() => installNodeVersion(item.version)}>
                         <i className="codicon codicon-cloud-download"></i>
                     </a>
-                    <a title="Install from Source" className="action" onClick={() => installNodeFromSource(item.version)}>
-                        <i className="codicon codicon-desktop-download"></i>
-                    </a>
+                    {canInstallFromSource && (
+                        <a title="Install from Source" className="action" onClick={() => installNodeFromSource(item.version)}>
+                            <i className="codicon codicon-desktop-download"></i>
+                        </a>
+                    )}
                 </div>
             </div>
         </div>

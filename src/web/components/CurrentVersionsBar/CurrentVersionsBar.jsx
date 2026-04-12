@@ -15,20 +15,17 @@ const CurrentVersionsBar = () => {
   const [enableButtonVisible, setEnableButtonVisible] = useState(false);
   const [showCurrentLabel, setShowCurrentLabel] = useState(false);
 
-  let isWin;
-
   useEffect(() => {
     getCurrentNodeVersion();
     getNodeVersionList();
-    getOperativeSystem();
+    getUIState();
 
     const handleMessage = event => {
       const { type, data } = event.data;
       switch (type) {
-        case 'receive-os':
-          isWin = (data === 'win32');
-          setEnableButtonVisible(isWin);
-          setShowCurrentLabel(isWin);
+        case 'receive-ui-state':
+          setEnableButtonVisible(data.canToggleNvm);
+          setShowCurrentLabel(data.showCurrentLabel);
           break;
         case 'receive-list':
           setNodeVersions(data);
@@ -119,16 +116,16 @@ const CurrentVersionsBar = () => {
   );
 };
 
-async function getOperativeSystem() {
-  vscode.postMessage({ type: 'send-os' });
-}
-
 async function getCurrentNodeVersion() {
   vscode.postMessage({ type: 'send-current' });
 }
 
 async function getNodeVersionList() {
   vscode.postMessage({ type: 'send-list' });
+}
+
+async function getUIState() {
+  vscode.postMessage({ type: 'send-ui-state' });
 }
 
 async function useNodeVersion(version) {
