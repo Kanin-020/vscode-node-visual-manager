@@ -1,11 +1,11 @@
 {
   "name": "node-visual-manager",
   "displayName": "NVM - Node Visual Manager",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "publisher": "kanin-020",
   "description": "NVM adaptation for VSCode.",
   "author": {
-    "name": "Jesus Miguel Alvarez Vazquez"
+    "name": "Kanin"
   },
   "categories": [
     "Visualization"
