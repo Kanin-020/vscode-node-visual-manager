@@ -26,7 +26,8 @@ export type ActionResponse =
         error: unknown;
         message?: never;
         id?: never;
-    };
+    }
+    | undefined;
 
 export type StatusResponse =
     | {

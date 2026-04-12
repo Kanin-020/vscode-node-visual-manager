@@ -105,14 +105,13 @@ async function installVersion(version: string, webviewView: vscode.WebviewView) 
 
         const response = await nvm.install(version);
 
-        if ('error' in response) {
+        if (!response || 'error' in response) {
             vscode.window.showErrorMessage('Could not install the requested version.');
             return;
         }
 
         if (response.message) {
             vscode.window.showInformationMessage(response.message);
-            vscode.window.showInformationMessage(`Complete node v${version} installed successfully.`);
             webviewView.webview.postMessage({ type: 'receive-install', data: response.id });
 
             await vscode.commands.executeCommand('workbench.action.webview.reloadWebviewAction');
@@ -127,9 +126,9 @@ async function installFromSource(version: string, webviewView: vscode.WebviewVie
 
         vscode.window.showInformationMessage('Installing node version from source: ' + version);
 
-        const response = await nvm.installFromSource(version);
+        const response = await nvm.installFromSource?.(version);
 
-        if ('error' in response) {
+        if (!response || 'error' in response) {
             vscode.window.showErrorMessage('Could not install the requested version.');
             return;
         }

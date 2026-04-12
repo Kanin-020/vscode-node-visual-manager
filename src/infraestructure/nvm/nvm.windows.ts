@@ -15,7 +15,6 @@ const nvmWindows: nvmPort = {
     useVersion,
     useVersionFromProject,
     install,
-    installFromSource,
     uninstall,
     enable,
     disable,
@@ -177,11 +176,6 @@ async function install(version: string): Promise<ActionResponse> {
         return { error: new Error(String(error)) };
     }
 
-}
-
-//TODO
-async function installFromSource(version: string): Promise<ActionResponse> {
-    return { message: "message", id: version };
 }
 
 async function uninstall(version: string): Promise<ActionResponse> {

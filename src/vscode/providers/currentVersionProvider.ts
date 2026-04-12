@@ -165,7 +165,7 @@ async function useVersion(version: string, webviewView: vscode.WebviewView) {
 
     const response = await nvm.useVersion(version);
 
-    if ('error' in response) {
+    if (!response || 'error' in response) {
         vscode.window.showErrorMessage('Could not set version to: ' + version);
         return;
 
@@ -182,7 +182,7 @@ async function uninstallVersion(version: string, webviewView: vscode.WebviewView
 
     const response = await nvm.uninstall(version);
 
-    if ('error' in response) {
+    if (!response || 'error' in response) {
         vscode.window.showErrorMessage('Could not uninstall the selected version.');
         return;
     }

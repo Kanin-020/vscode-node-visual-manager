@@ -10,7 +10,7 @@ export interface nvmPort {
     useVersion(version: string): Promise<ActionResponse>;
     useVersionFromProject(projectPath: string): Promise<ActionResponse>;
     install(version: string): Promise<ActionResponse>;
-    installFromSource(version: string): Promise<ActionResponse>;
+    installFromSource?(version: string): Promise<ActionResponse>;
     uninstall(version: string): Promise<ActionResponse>;
 
     enable?(): Promise<StatusResponse>;

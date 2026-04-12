@@ -40,8 +40,8 @@ class NVM implements nvmPort {
         return this.implementation.install(version);
     }
 
-    public async installFromSource(version: string): Promise<ActionResponse> {
-        return this.implementation.installFromSource(version);
+    public async installFromSource?(version: string): Promise<ActionResponse> {
+        return this.implementation.installFromSource?.(version);
     }
 
     public async uninstall(version: string): Promise<ActionResponse> {

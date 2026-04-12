@@ -158,12 +158,15 @@ async function getAvailableVersionList(): Promise<AvailableVersionListResponse> 
 async function install(version: string): Promise<ActionResponse> {
     try {
 
-        const { stdout: lsOut } = await execAsync(
-            `bash -c "source ~/.nvm/nvm.sh && nvm ls ${version}"`
-        );
+        const response = await getInstalledVersionList();
 
-        if (lsOut.includes(version)) {
-            return { message: `Node ${version} ya está instalada`, id: version };
+        if ('error' in response) {
+            vscode.window.showErrorMessage('Could not get node version list.');
+            return;
+        }
+
+        if (response.nodeList.includes(version)) {
+            return { message: `Node ${version} already installed`, id: version };
         }
 
         const { stdout } = await execAsync(
