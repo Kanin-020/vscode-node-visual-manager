@@ -49,7 +49,7 @@ Install [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) (NVM SH).
 
 ### From VSIX
 
-1. Download the `.vsix` file from [Releases](https://github.com/Kanin-020/Node-Visual-Manager-Issues/releases)
+1. Download the `.vsix` file from [Releases](https://github.com/Kanin-020/vscode-node-visual-manager/releases)
 2. Open VS Code
 3. Run `Extensions: Install from VSIX...` from the Command Palette
 4. Select the downloaded `.vsix` file
@@ -84,8 +84,8 @@ The extension automatically activates the version specified in `.nvmrc` when you
 
 ```bash
 # Clone the repository
-git clone https://github.com/Kanin-020/Node-Visual-Manager-Issues.git
-cd Node-Visual-Manager-Issues
+git clone https://github.com/Kanin-020/vscode-node-visual-manager.git
+cd vscode-node-visual-manager
 
 # Install dependencies
 npm install
@@ -115,7 +115,7 @@ npm run compile
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a [Pull Request](https://github.com/Kanin-020/Node-Visual-Manager-Issues/pulls).
+Contributions are welcome! Please feel free to submit a [Pull Request](https://github.com/Kanin-020/vscode-node-visual-manager/pulls).
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
