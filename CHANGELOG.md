@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Changed
 
+- initial commit open source
+
+## [1.4.0] - 2026-09-04
+
+### Changed
+
 - Compatible with NVM for Windows v2.0.0 (new commands and output formats)
 - `nvm current` replaced with `nvm default`
 - `nvm list available` replaced with `nvm list releases --no-limit`
