@@ -1,0 +1,18 @@
+### VSCODE ###
+.vscode-test
+
+### Folders ###
+dist
+out
+node_modules
+icons
+themes
+/assets/
+
+### Config files ###
+
+.eslintcache
+.pnpm-debug.log*
+*.vsix
+.DS_Store
+.env

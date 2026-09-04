@@ -1,0 +1,79 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "npm: compile",
+            "type": "npm",
+            "script": "compile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$webpack"]
+        },
+        {
+            "label": "npm: watch",
+            "type": "npm",
+            "script": "watch",
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "webpack",
+                "pattern": {
+                    "regexp": "^$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "webpack",
+                    "endsPattern": "compiled"
+                }
+            }
+        },
+        {
+            "label": "nvm: compile",
+            "type": "shell",
+            "command": "source ~/.nvm/nvm.sh && nvm use default && npm run compile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$webpack"],
+            "options": {
+                "shell": {
+                    "executable": "bash",
+                    "args": ["-l", "-c"]
+                }
+            },
+            "windows": {
+                "command": "nvm use default && npm run compile"
+            }
+        },
+        {
+            "label": "nvm: watch",
+            "type": "shell",
+            "command": "source ~/.nvm/nvm.sh && nvm use default && npm run watch",
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "webpack",
+                "pattern": {
+                    "regexp": "^$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "webpack",
+                    "endsPattern": "compiled"
+                }
+            },
+            "options": {
+                "shell": {
+                    "executable": "bash",
+                    "args": ["-l", "-c"]
+                }
+            },
+            "windows": {
+                "command": "nvm use default && npm run watch"
+            }
+        }
+    ]
+}

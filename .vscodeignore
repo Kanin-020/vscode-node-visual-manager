@@ -1,0 +1,23 @@
+.vscode/**
+.vscode-test/**
+out/**
+node_modules/**
+src/**
+src/web/assets/icons/**
+.gitignore
+.yarnrc
+.editorconfig
+.prettierrc
+.prettierignore
+.eslintrc.json
+babel.config.js
+webpack.config.js
+vsc-extension-quickstart.md
+**/tsconfig*.json
+**/*.map
+**/*.ts
+**/.vscode-test.*
+.github/**
+resources/node visual manager.svg
+resources/preview.gif
+resources/linux_preview.gif

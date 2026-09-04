@@ -1,0 +1,87 @@
+body {
+    background: var(--vscode-sideBar-background) !important;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#item-list {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.title {
+    margin-bottom: 0.25rem;
+    padding: 1rem 0.75rem 0;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.footer {
+    padding: 0 7px;
+    display: flex;
+    -moz-column-gap: 4px;
+    column-gap: 4px;
+    border-top: 1px solid var(--vscode-panel-border);
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    justify-content: space-between;
+    background: var(--vscode-sideBar-background);
+}
+
+.footer-item {
+    height: 100%;
+    padding: 3px 6px;
+    display: grid;
+    grid-auto-flow: column;
+    -moz-column-gap: 4px;
+    column-gap: 4px;
+    align-items: center;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.footer-item-content {
+    height: 100%;
+    padding: 3px 6px;
+    display: grid;
+    grid-auto-flow: column;
+    -moz-column-gap: 4px;
+    column-gap: 4px;
+    align-items: center;
+    cursor: pointer;
+    color: var(--vscode-descriptionForeground);
+}
+
+.on {
+    color: var(--vscode-charts-green);
+}
+
+.off {
+    color: var(--vscode-charts-red);
+}
+
+.footer-item:hover {
+    background: var(--vscode-toolbar-hoverBackground);
+}
+
+.footer-text {
+    font-weight: 900;
+}
+
+.account {
+    color: transparent !important;
+}

@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"module": "node16",
+		"target": "es2022",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"types": ["node", "mocha"],
+		"sourceMap": true,
+		"rootDir": "src",
+		"jsx": "react-jsx",
+		"allowJs": true,
+		"paths": {
+			"@core/*": ["./src/extension/core/*"],
+			"@infraestructure/*": ["./src/extension/infraestructure/*"],
+			"@vscode/*": ["./src/extension/vscode/*"],
+			"@web/*": ["./src/extension/web/*"]
+		}
+	},
+	"include": ["src/**/*.ts", "src/**/*.tsx"],
+	"exclude": ["src/tests/**/*.ts"]
+}
